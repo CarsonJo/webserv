@@ -5,6 +5,7 @@
 #include <netdb.h>
 #include <cstring>
 #include <string>
+#include <stdlib.h>
 
 class Addrinfo
 {

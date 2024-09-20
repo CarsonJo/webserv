@@ -38,6 +38,7 @@ void	Connection::erase(unsigned long int index)
 		arr[index] = arr[nfds - 1];
 	nfds--;
 }
+
 #include <iostream>
 void	Connection::new_connect(Addrinfo& info)
 {
@@ -47,6 +48,8 @@ void	Connection::new_connect(Addrinfo& info)
 	if (nfds >= 0 && arr[0].revents == POLLIN)
 	{
 		fd = accept(arr[0].fd, info.get_addr(), &recv);
-		this->add(fd, POLLIN);
+		if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+			throw(std::exception());
+		this->add(fd, DISCUSS);
 	}
 }

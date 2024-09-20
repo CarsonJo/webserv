@@ -5,6 +5,7 @@
 # include <vector>
 # include <unistd.h>
 # include <sys/socket.h>
+# include <fcntl.h>
 # include "Addrinfo.hpp"
 # define BASE_ALLOC 1000
 # define DISCUSS POLLIN | POLLOUT

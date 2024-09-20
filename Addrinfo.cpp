@@ -15,7 +15,7 @@ Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std:
 
 Addrinfo::~Addrinfo()
 {
-	delete res;
+	free(res);
 }
 
 int	Addrinfo::get_family() const
