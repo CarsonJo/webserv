@@ -1,5 +1,5 @@
 #include "Addrinfo.hpp"
-
+#include <iostream>
 Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std::string& port)
 {
 	hints.ai_family = family;
@@ -9,13 +9,22 @@ Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std:
 	hints.ai_addr = 0;
 	hints.ai_addrlen = 0;
 	hints.ai_next = 0;
-	getaddrinfo(0, port.c_str(), &hints, &res);
+	if (int a = getaddrinfo(0, port.c_str(), &hints, &res))
+	{
+		std::cout << "addrinfo error: " << a << std::endl;
+		std::exit(2);
+	}
 	this->port = port;
+}
+
+Addrinfo::Addrinfo() : hints({0}), res(0), port("-1")
+{
+
 }
 
 Addrinfo::~Addrinfo()
 {
-	free(res);
+	freeaddrinfo(res);
 }
 
 int	Addrinfo::get_family() const
@@ -51,4 +60,27 @@ socklen_t	Addrinfo::get_addrlen() const
 struct sockaddr*	Addrinfo::get_addr()
 {
 	return (res->ai_addr);
+}
+
+Addrinfo::Addrinfo(const Addrinfo& to_copy)
+{
+	hints = to_copy.hints;
+	port = to_copy.port;
+	if (int a = getaddrinfo(0, to_copy.port.c_str(), &to_copy.hints, &res))
+	{
+		std::cout << "addrinfo error: " << a << std::endl;
+		std::exit(2);
+	}
+}
+
+void	Addrinfo::operator=(const Addrinfo& to_copy)
+{
+	freeaddrinfo(res);
+	hints = to_copy.hints;
+	port = to_copy.port;
+	if (int a = getaddrinfo(0, to_copy.port.c_str(), &to_copy.hints, &res))
+	{
+		std::cout << "addrinfo error: " << a << std::endl;
+		std::exit(2);
+	}
 }

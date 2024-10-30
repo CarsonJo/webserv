@@ -1,7 +1,10 @@
 SRC =	main.cpp\
-		Connection.cpp\
+		Webserv.cpp\
 		Addrinfo.cpp\
-		FSocket.cpp
+		Fsocket.cpp\
+		VirtualServ.cpp\
+		parse_config.cpp\
+		Exception.cpp\
 
 OBJ = $(SRC:%.cpp=%.o)
 

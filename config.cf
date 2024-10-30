@@ -1,0 +1,22 @@
+server
+
+
+
+
+{
+
+
+
+
+	server_name 	 	nom;
+
+
+
+
+	listen 				895  ;
+
+
+
+
+
+}

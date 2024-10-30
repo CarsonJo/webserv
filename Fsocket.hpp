@@ -3,30 +3,31 @@
 # include <unistd.h>
 # include <sys/socket.h>
 # include <exception>
+# include <string>
 # include <fcntl.h>
 # include "Addrinfo.hpp"
 # define LISTEN 15
-class FSocket
+class Fsocket
 {
 	private:
-		FSocket();
-		FSocket(const FSocket& to_copy);
-		void	operator=(const FSocket& to_copy);
-		int	fd;
-
+		int			fd;
+		Addrinfo	my_info;
+		Fsocket();
 	public:
-		int		get_fd();
+		int		get_fd() const;
+		int		accept_connect();
 		template <typename A>
-		void	init_connect(Addrinfo &info, const A& opt){
+		void	init_connect(const A& opt){
 			setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(A));
-			if (bind(fd, info.get_addr(), info.get_addrlen()) < 0)
+			if (bind(fd, my_info.get_addr(), my_info.get_addrlen()) < 0)
 				throw(std::exception());
 			if (listen(fd, LISTEN))
 				throw(std::exception());
 		};
-		FSocket(const Addrinfo &info);
-		FSocket(int fd);
-		~FSocket();
+		Fsocket(const Fsocket& to_copy);
+		Fsocket(const Addrinfo &info);
+		void	operator=(const Fsocket& to_copy);
+		~Fsocket();
 };
 
 #endif

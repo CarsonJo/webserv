@@ -1,10 +1,4 @@
-#include <poll.h>
-#include <string>
-#include <iostream>
-#include <errno.h>
-#include "Connection.hpp"
-#include "Addrinfo.hpp"
-#include "FSocket.hpp"
+#include "main.hpp"
 
 void	handle_recv(struct pollfd *arr, unsigned long int size)
 {
@@ -21,21 +15,25 @@ void	handle_recv(struct pollfd *arr, unsigned long int size)
 				std::cout << "ERNNO :" << errno << std::endl;
 			write(1, &buff, end);
 			if ((arr[i].revents & POLLOUT) != 0)
-				write(arr[i].fd, "message receive\n", 16);
+				write(arr[i].fd, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 64\r\n\r\n<!DOCTYPE html><html><body><p>messsage received<p></body></html>", 129);
 		}
 		i++;
 	}
+	// std::cout << "finished" << std::endl;
 }
 
 int main()
 {
-	Addrinfo	info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
-	FSocket		main_socket(info);
-	Connection			poll_test;
-	int					err = 0;
+	// Addrinfo	info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
+	// Fsocket		main_socket(info);
+	Webserv		poll_test;
+	// VirtualServ		server("test", "port", info);
+	int			err = 0;
 
-	main_socket.init_connect<int>(info, (int){1});
-	poll_test.add(main_socket.get_fd(), POLLIN);
+	parse_config("config.cf", poll_test);
+	std::cout << server.get_name() << std::endl;
+	std::cout << server.get_port() << std::endl;
+	main_socket.init_connect<int>((int){1});
 	while (1)
 	{
 		if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 1000)) > 0)
