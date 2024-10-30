@@ -53,6 +53,25 @@ std::map<std::string, ParseFunction> init_static_elem()
 	return (ret);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+VirtualServ::VirtualServ() : socket_fd(), connection_fd(0), port(""), server_name("")
+{
+
+}
+
+VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_fd), connection_fd(to_copy.connection_fd), port(to_copy.port), server_name(to_copy.server_name)
+{
+
+}
+
+void	VirtualServ::operator=(const VirtualServ& to_copy)
+{
+	socket_fd = to_copy.socket_fd;
+	connection_fd = to_copy.connection_fd;
+	port = to_copy.port;
+	server_name = to_copy.server_name;
+}
+
 //verifier ce qui se passe si fail de construction de socket_fd
 VirtualServ::VirtualServ(const Addrinfo& info) : socket_fd(info), connection_fd(0)
 {
@@ -79,7 +98,14 @@ void	VirtualServ::remove_connection(struct pollfd* fd)
 
 void	VirtualServ::launch_serv()
 {
+	if (port.size() == 0)
+		throw(std::exception());
 	socket_fd.init_connect(1);
+}
+
+void	VirtualServ::set_launched(bool val)
+{
+	socket_fd.set_launched(val);
 }
 
 void	VirtualServ::set_name(const std::string &name)
@@ -94,8 +120,16 @@ std::string	VirtualServ::get_name() const
 
 void	VirtualServ::set_port(const std::string &port)
 {
-	Addrinfo test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port);
-	socket_fd = Fsocket(test);
+	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port);
+	Fsocket		temp(test);
+
+	socket_fd = temp;
+	this->port = port;
+}
+
+void	VirtualServ::set_fd(int temp)
+{
+	socket_fd.set_fd(temp);
 }
 
 std::string	VirtualServ::get_port() const

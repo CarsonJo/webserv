@@ -13,10 +13,22 @@ server
 
 
 
-	listen 				895  ;
+	listen 				3246  ;
 
 
 
 
 
+}
+server{
+	server_name deuxieme;
+	listen	4040;
+}
+server{
+	server_name troisieme;
+	listen 5050;
+}
+server{
+	server_name quatrieme;
+	listen 6060;
 }

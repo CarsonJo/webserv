@@ -18,10 +18,13 @@ class Webserv
 		Webserv();
 		~Webserv();
 		struct pollfd	*c_arr();
+		struct pollfd	*connect_arr();
 		int				get_size() const;
+		int				get_connect_size() const;
 		void			add_serv(const VirtualServ& virtserv);
 		void			erase(unsigned long int index);
 		void			new_connect();
+		void			init_all();
 		void			add_master(const VirtualServ& virt_serv);
 
 	private :

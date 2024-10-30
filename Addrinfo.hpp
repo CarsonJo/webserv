@@ -11,6 +11,7 @@ class Addrinfo
 {
 	public :
 
+		Addrinfo();
 		Addrinfo(int family, int socktype, int protocol, int flags, const std::string &port);
 		Addrinfo(const Addrinfo& to_copy);
 		~Addrinfo();
@@ -24,7 +25,6 @@ class Addrinfo
 		void	operator=(const Addrinfo& to_copy);
 
 	private :
-		Addrinfo();
 		struct addrinfo	hints;
 		struct addrinfo	*res;
 		std::string		port;

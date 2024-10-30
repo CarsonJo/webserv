@@ -76,7 +76,7 @@ static void config_server(std::fstream &config, std::string &line, VirtualServ& 
 int	parse_config(std::string name, Webserv& server)
 {
 	Addrinfo		info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
-	VirtualServ		temp_serv(Addrinfo(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246"));
+	VirtualServ		temp_serv;
 	std::fstream	config;
 	std::string		line;
 
@@ -88,10 +88,13 @@ int	parse_config(std::string name, Webserv& server)
 	}
 	while (search_block(config, line) != EOF)
 	{
+		temp_serv.set_fd(-1);
+		temp_serv.set_launched(0);
 		config_server(config, line, temp_serv);
 		temp_serv.launch_serv();
 		server.add_serv(temp_serv);
 		server.add_master(temp_serv);
 	}
+	temp_serv.set_fd(-1);
 	return (0);
 }

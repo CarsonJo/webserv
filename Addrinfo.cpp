@@ -1,5 +1,7 @@
 #include "Addrinfo.hpp"
 #include <iostream>
+
+
 Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std::string& port)
 {
 	hints.ai_family = family;
@@ -17,14 +19,15 @@ Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std:
 	this->port = port;
 }
 
-Addrinfo::Addrinfo() : hints({0}), res(0), port("-1")
+Addrinfo::Addrinfo() : hints((struct addrinfo){0,0,0,0,0,0,0,0}), res(0), port("-1")
 {
 
 }
 
 Addrinfo::~Addrinfo()
 {
-	freeaddrinfo(res);
+	if (res != 0)
+		freeaddrinfo(res);
 }
 
 int	Addrinfo::get_family() const
@@ -75,7 +78,8 @@ Addrinfo::Addrinfo(const Addrinfo& to_copy)
 
 void	Addrinfo::operator=(const Addrinfo& to_copy)
 {
-	freeaddrinfo(res);
+	if (res != 0)
+		freeaddrinfo(res);
 	hints = to_copy.hints;
 	port = to_copy.port;
 	if (int a = getaddrinfo(0, to_copy.port.c_str(), &to_copy.hints, &res))

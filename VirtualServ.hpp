@@ -17,8 +17,14 @@ class VirtualServ
 {
 	public :
 
+		VirtualServ();
+		VirtualServ(const VirtualServ& to_copy);
+		VirtualServ(const Addrinfo& info);
+		void	operator=(const VirtualServ& to_copy);
+		void		set_fd(int temp);
 		void		set_name(const std::string &name);
 		void		set_port(const std::string &port);
+		void		set_launched(bool val);
 		void		add_connection(struct pollfd* fd);
 		void		remove_connection(struct pollfd* fd);
 		int			accept_connect();
@@ -27,13 +33,9 @@ class VirtualServ
 		int			get_fd() const;
 		void		launch_serv();
 		static std::map<std::string, ParseFunction>	server_elem;
-		VirtualServ(const Addrinfo& info);
 
 	private :
 
-		VirtualServ();
-		VirtualServ(const VirtualServ& to_copy);
-		void	operator=(const VirtualServ& to_copy);
 		Fsocket							socket_fd;
 		std::vector<struct pollfd *>	connection_fd;
 		std::string						port;

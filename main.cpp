@@ -2,7 +2,7 @@
 
 void	handle_recv(struct pollfd *arr, unsigned long int size)
 {
-	unsigned long int	i = 1;
+	unsigned long int	i = 0;
 	char				buff[1024];
 	int					end;
 
@@ -24,22 +24,16 @@ void	handle_recv(struct pollfd *arr, unsigned long int size)
 
 int main()
 {
-	// Addrinfo	info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
-	// Fsocket		main_socket(info);
 	Webserv		poll_test;
-	// VirtualServ		server("test", "port", info);
 	int			err = 0;
 
 	parse_config("config.cf", poll_test);
-	std::cout << server.get_name() << std::endl;
-	std::cout << server.get_port() << std::endl;
-	main_socket.init_connect<int>((int){1});
 	while (1)
 	{
-		if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 1000)) > 0)
+		if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 10)) > 0)
 		{
-			poll_test.new_connect(info);
-			handle_recv(poll_test.c_arr(), poll_test.get_size());
+			poll_test.new_connect();
+			handle_recv(poll_test.connect_arr(), poll_test.get_connect_size());
 		}
 	}
 }
