@@ -1,6 +1,6 @@
 #include "main.hpp"
 #include "Exception.hpp"
-#include "VirtualServ.hpp"
+#include "Webserv/VirtualServ.hpp"
 #include <map>
 
 static int	search_block(std::fstream &file, std::string &line)
@@ -92,7 +92,7 @@ int	parse_config(std::string name, Webserv& server)
 		temp_serv.set_launched(0);
 		config_server(config, line, temp_serv);
 		temp_serv.launch_serv();
-		server.add_serv(temp_serv);
+		server.add_serv(new VirtualServ(temp_serv));
 		server.add_master(temp_serv);
 	}
 	temp_serv.set_fd(-1);

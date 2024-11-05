@@ -5,10 +5,10 @@
 #include <string>
 #include <iostream>
 #include <errno.h>
-#include "Webserv.hpp"
-#include "Addrinfo.hpp"
-#include "Fsocket.hpp"
-#include "VirtualServ.hpp"
-# include "VirtualServ.hpp"
+#include "Webserv/Webserv.hpp"
+#include "Webserv/Addrinfo.hpp"
+#include "Webserv/Fsocket.hpp"
+#include "Webserv/VirtualServ.hpp"
+
 int	parse_config(std::string name, Webserv& server);
 #endif

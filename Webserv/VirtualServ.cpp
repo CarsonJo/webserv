@@ -64,13 +64,18 @@ VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_
 
 }
 
-void	VirtualServ::operator=(const VirtualServ& to_copy)
+VirtualServ::~VirtualServ()
 {
-	socket_fd = to_copy.socket_fd;
-	connection_fd = to_copy.connection_fd;
-	port = to_copy.port;
-	server_name = to_copy.server_name;
+
 }
+
+// void	VirtualServ::operator=(VirtualServ& to_copy)
+// {
+// 	socket_fd = to_copy.socket_fd;
+// 	connection_fd = to_copy.connection_fd;
+// 	port = to_copy.port;
+// 	server_name = to_copy.server_name;
+// }
 
 //verifier ce qui se passe si fail de construction de socket_fd
 VirtualServ::VirtualServ(const Addrinfo& info) : socket_fd(info), connection_fd(0)
@@ -85,15 +90,19 @@ int	VirtualServ::accept_connect()
 
 void	VirtualServ::add_connection(struct pollfd* fd)
 {
-	connection_fd.push_back(fd);
+	connection_fd.push_back(new Http_connection(fd, 0));
 }
 
 void	VirtualServ::remove_connection(struct pollfd* fd)
 {
-	std::vector<struct pollfd*>::iterator it = std::find(connection_fd.begin(), connection_fd.end(), fd);
-
-	if (it != connection_fd.end())
-		connection_fd.erase(it);
+	for (std::vector<Http_connection*>::iterator it = connection_fd.begin(); it != connection_fd.end(); it++)
+	{
+		if ((*it)->get_pollfd() == fd)
+		{
+			connection_fd.erase(it);
+			break ;
+		}
+	}
 }
 
 void	VirtualServ::launch_serv()
@@ -116,6 +125,39 @@ void	VirtualServ::set_name(const std::string &name)
 std::string	VirtualServ::get_name() const
 {
 	return (server_name);
+}
+
+void	VirtualServ::handle_connection(int &event, Webserv& serv)
+{
+	for (unsigned long i = 0; i < connection_fd.size() && event > 0; i++)
+	{
+		std::cout << connection_fd[i]->get_pollfd()->revents << std::endl;
+		if ((connection_fd[i]->get_pollfd()->revents & POLLIN) != 0)
+		{
+			try
+			{
+				connection_fd[i]->set_request(Request::parsedRequest(connection_fd[i]->get_pollfd()->fd));
+				connection_fd[i]->get_pollfd()->events = POLLOUT;
+				event--;
+			}
+			catch(std::exception &a)
+			{
+				std::cout<<"removed" << std::endl;
+				Http_connection* temp = connection_fd[i];
+				serv.erase(connection_fd[i]->get_pollfd()->fd);
+				delete temp;
+				connection_fd.erase(connection_fd.begin() + i);
+				// remove_connection(connection_fd[i]->get_pollfd());
+				event--;
+			}
+		}
+		else if ((connection_fd[i]->get_pollfd()->revents & POLLOUT) != 0 && connection_fd[i]->get_request())
+		{
+			connection_fd[i]->get_request()->response(connection_fd[i]->get_pollfd()->fd);
+			connection_fd[i]->get_pollfd()->events = POLLIN;
+			event--;
+		}
+	}
 }
 
 void	VirtualServ::set_port(const std::string &port)

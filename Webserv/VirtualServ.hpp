@@ -6,13 +6,17 @@
 # include <exception>
 # include <vector>
 # include <algorithm>
+# include <poll.h>
 # include "Addrinfo.hpp"
 # include "Fsocket.hpp"
-# define GET 1
-# define POST 2
-# define DELETE 4
+# include "Webserv.hpp"
+# include "Http_connection.hpp"
+# include "../Http_protocol/Request.hpp"
+
 class VirtualServ;
+class Webserv;
 typedef void	(*ParseFunction)(const std::string &, VirtualServ&);
+
 class VirtualServ
 {
 	public :
@@ -20,12 +24,13 @@ class VirtualServ
 		VirtualServ();
 		VirtualServ(const VirtualServ& to_copy);
 		VirtualServ(const Addrinfo& info);
-		void	operator=(const VirtualServ& to_copy);
+		~VirtualServ();
 		void		set_fd(int temp);
 		void		set_name(const std::string &name);
 		void		set_port(const std::string &port);
 		void		set_launched(bool val);
 		void		add_connection(struct pollfd* fd);
+		void		handle_connection(int &event, Webserv& serv);
 		void		remove_connection(struct pollfd* fd);
 		int			accept_connect();
 		std::string	get_name() const;
@@ -36,8 +41,9 @@ class VirtualServ
 
 	private :
 
+		void	operator=(VirtualServ& to_copy);
 		Fsocket							socket_fd;
-		std::vector<struct pollfd *>	connection_fd;
+		std::vector<Http_connection*>	connection_fd;
 		std::string						port;
 		std::string						server_name;
 		// int			method;

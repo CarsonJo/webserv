@@ -1,8 +1,10 @@
 SRC =	main.cpp\
-		Webserv.cpp\
-		Addrinfo.cpp\
-		Fsocket.cpp\
-		VirtualServ.cpp\
+		Webserv/Webserv.cpp\
+		Webserv/Addrinfo.cpp\
+		Webserv/Fsocket.cpp\
+		Webserv/VirtualServ.cpp\
+		Webserv/Http_connection.cpp\
+		Http_protocol/Request.cpp\
 		parse_config.cpp\
 		Exception.cpp\
 
