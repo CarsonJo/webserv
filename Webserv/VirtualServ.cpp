@@ -146,6 +146,11 @@ void	VirtualServ::set_fd(int temp)
 	socket_fd.set_fd(temp);
 }
 
+std::string	VirtualServ::get_root() const
+{
+	return (root);
+}
+
 std::string	VirtualServ::get_name() const
 {
 	return (server_name);

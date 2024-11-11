@@ -123,9 +123,10 @@ void	Webserv::handle_recv(int &event)
 		else if ((arr[i].revents & POLLOUT) != 0)
 		{
 			std::map<int, Request*>::iterator	it = request.find(arr[i].fd);
+			VirtualServ* point = linkServ.at(arr[i].fd);
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
-			it->second->response(arr[i].fd);
+			it->second->response(arr[i].fd, point);
 			delete it->second;
 			request.erase(it);
 			arr[i].events = POLLIN;

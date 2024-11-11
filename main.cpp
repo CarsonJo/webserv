@@ -10,7 +10,7 @@ int main()
 	{
 		while (1)
 		{
-			if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 100)) > 0)
+			if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 5000)) > 0)
 			{
 				a++;
 				std::cout << "enter" << std::endl;

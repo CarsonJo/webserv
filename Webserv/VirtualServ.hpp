@@ -34,6 +34,7 @@ class VirtualServ
 		int			accept_connect();
 		std::string	get_name() const;
 		std::string	get_port() const;
+		std::string	get_root() const;
 		int			get_fd() const;
 		void		launch_serv();
 

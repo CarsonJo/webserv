@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <exception>
 #include <iostream>
+#include "../Webserv/VirtualServ.hpp"
+
+class VirtualServ;
 
 class Request
 {
@@ -12,7 +15,7 @@ class Request
 		static Request* parsedRequest(int fd);
 		Request();
 		virtual ~Request();
-		virtual void	response(int fd) = 0;
+		virtual void	response(int fd, VirtualServ* serv) = 0;
 
 	protected:
 
@@ -29,7 +32,7 @@ class Get : public Request
 		Get();
 		Get(const std::string& target);
 		~Get();
-		void	response(int fd);
+		void	response(int fd, VirtualServ* serv);
 
 	private :
 
@@ -41,7 +44,7 @@ class Post : public Request
 		Post();
 		Post(const std::string& target);
 		~Post();
-		void	response(int fd);
+		void	response(int fd, VirtualServ* serv);
 
 	private :
 
@@ -53,7 +56,7 @@ class Delete : public Request
 		Delete();
 		Delete(const std::string& target);
 		~Delete();
-		void	response(int fd);
+		void	response(int fd, VirtualServ* serv);
 
 	private :
 
