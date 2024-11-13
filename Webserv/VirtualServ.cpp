@@ -62,7 +62,7 @@ void	VirtualServ::root_var(const std::string& line, VirtualServ &serv)
 		throw(std::exception());
 	}
 	serv.set_root(temp);
-	std::cout << "root : " << temp << std::endl;
+	std::cout << "root : " << serv.get_root() << std::endl;
 }
 
 std::map<std::string, ParseFunction> init_static_elem()
@@ -76,12 +76,13 @@ std::map<std::string, ParseFunction> init_static_elem()
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VirtualServ::VirtualServ() : socket_fd(),  port(""), server_name("")
+VirtualServ::VirtualServ() : socket_fd(),  port(""), server_name(""), root("")
 {
 
 }
 
-VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_fd)
+VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_fd), port(to_copy.port)
+, server_name(to_copy.server_name), root(to_copy.root)
 {
 
 }

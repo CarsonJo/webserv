@@ -105,8 +105,8 @@ void	Webserv::handle_recv(int &event)
 		{
 			try
 			{
-				request.insert(std::pair<int, Request *>(arr[i].fd, Request::parsedRequest(arr[i].fd)));
-				arr[i].events = POLLOUT;
+				request.insert(std::pair<int, Request *>(arr[i].fd, Request::parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
+				arr[i].events = POLLOUT | POLLHUP | POLLERR | POLLNVAL;
 				event--;
 			}
 			catch(std::exception &a)
@@ -126,10 +126,13 @@ void	Webserv::handle_recv(int &event)
 			VirtualServ* point = linkServ.at(arr[i].fd);
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
-			it->second->response(arr[i].fd, point);
-			delete it->second;
-			request.erase(it);
-			arr[i].events = POLLIN;
+			std::cout << "root : " << point->get_root()<< std::endl;
+			if (it->second->response(arr[i].fd, point))
+			{
+				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
+				delete it->second;
+				request.erase(it);
+			}
 			event--;
 		}
 	}
