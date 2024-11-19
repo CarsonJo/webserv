@@ -48,9 +48,19 @@ std::string	e403(VirtualServ* serv)
 
 std::string	e404(VirtualServ* serv)
 {
-	std::string	ret;
-
+	std::string		ret;
+	// std::ifstream	f;
+	// char			buff[S404];
+	// int a;
 	(void)serv;
-	ret.append(" Not Found\r\n").append(Date().get_date());
+	// f.open(ROOT, std::fstream::in);
+	// if (!f.is_open())
+	// 	std::cout << "asdfasdf" << std::endl;
+	// f.read(&buff[0], S404);
+	// a = f.gcount();
+	// std::cout << a << buff << std::endl;
+	ret.append(" Not Found\r\n");//.append("Content-Length: ").append(SIZE_404).append("\r\nContent-Type: text/html\r\n\r\n")
+	//.append(std::string(buff));
+
 	return (ret);
 }

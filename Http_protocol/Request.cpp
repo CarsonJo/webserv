@@ -59,7 +59,7 @@ Request* Request::parsedRequest(int fd, VirtualServ *serv)
 		ret->content_type = "image/png\r\n";
 	else if (ret->target.find(".css") != std::string::npos)
 		ret->content_type = "text/css\r\n";
-	else if (ret->target.find("favico") != std::string::npos)
+	else if (ret->target.find(".ico") != std::string::npos)
 		std::cout << "WTFFFFFFFFFFFFFF : " << ret->target << ": WTFVVVVVVVVVVVVVVVV2 : " << serv->get_root().append(ret->target) << std::endl;
 	else
 		ret->content_type = "text/html\r\n";
@@ -87,6 +87,7 @@ int	Request::handle_error(int fd, VirtualServ* server, std::string error_code, i
 	std::string header;
 
 	header.append("HTTP/1.1 ").append(error_code).append(Error::get_error(error, server));
+	std::cout << "ERROR: " << header << std::endl;
 	write(fd, header.c_str(), header.size());
 	return (1);
 }
@@ -114,16 +115,13 @@ bool	Get::response(int fd, VirtualServ* serv)
 		path.append(target);
 		std::cout << path << std::endl;
 		if (access(path.c_str(),F_OK | R_OK))
-		{
-			write(fd, "HTTP/1.1 404 notfound\r\n", 24a);
-			return (1);
-		}
+			return (handle_error(fd, serv, "404", 404));
 		file_to_send.open(path.c_str(), std::fstream::in);
 		if (!file_to_send.is_open())
 			throw(std::exception());
 		header = "HTTP/1.1 200 OK\r\n";
 		header.append("Content-Type: ").append(content_type).append("Content-Length: ").append(content_length)
-		.append("Date: ").append(a.get_date()).append("\r\n");
+		.append(a.get_date()).append("\r\n");
 		write(fd, header.c_str(), header.size());
 		first = 1;
 		return (0);
@@ -173,6 +171,7 @@ Delete::Delete() : Request()
 {
 
 }
+
 bool	Delete::response(int fd, VirtualServ* serv)
 {
 	std::cout << "got a delete" << std::endl;

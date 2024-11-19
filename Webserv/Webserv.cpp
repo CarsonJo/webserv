@@ -132,7 +132,7 @@ void	Webserv::handle_recv(int &event)
 				delete it->second;
 				request.erase(it);
 				event--;
-				// this->erase(arr[i].fd);
+				this->erase(arr[i].fd);
 			}
 			event--;
 		}
