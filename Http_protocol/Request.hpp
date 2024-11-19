@@ -6,7 +6,8 @@
 #include <sstream>
 #include <string>
 #include "../Webserv/VirtualServ.hpp"
-
+#include "Date.hpp"
+#include "Error.hpp"
 class VirtualServ;
 
 class Request
@@ -20,6 +21,8 @@ class Request
 
 	protected:
 
+		int				handle_error(int fd, VirtualServ* serv, std::string error_code, int error);
+		std::string		error_header(int code);
 		static Request* checkRequest(const std::string& temp);
 		std::string		header;
 		std::string		target;
@@ -28,7 +31,7 @@ class Request
 		std::string		content_length;
 		bool			first;
 		std::fstream	file_to_send;
-		char			buff[8096];
+		char			buff[8192];
 };
 
 class Get : public Request

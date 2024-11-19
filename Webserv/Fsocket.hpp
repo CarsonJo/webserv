@@ -9,7 +9,7 @@
 # include <errno.h>
 # include <iostream>
 # include "Addrinfo.hpp"
-# define LISTEN 15
+# define LISTEN 100
 class Fsocket
 {
 	private:

@@ -4,6 +4,7 @@ int main()
 {
 	Webserv		poll_test;
 	int			err = 0;
+	int			a = 0;
 
 	parse_config("config.cf", poll_test);
 	try
@@ -15,6 +16,7 @@ int main()
 				std::cout << "enter" << std::endl;
 				poll_test.new_connect(err);
 				poll_test.handle_recv(err);
+				a++;
 			}
 		}
 	}

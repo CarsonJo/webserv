@@ -52,7 +52,7 @@ void	Webserv::add_serv(VirtualServ* virtserv)
 
 void	Webserv::add_master(const VirtualServ& virt_serv)
 {
-	arr.push_back((struct pollfd){.fd = virt_serv.get_fd(), .events = POLLIN, .revents = 0});
+	arr.push_back((struct pollfd){.fd = virt_serv.get_fd(), .events = POLLIN | POLLHUP | POLLERR | POLLNVAL, .revents = 0});
 	master_socket++;
 }
 
@@ -106,7 +106,7 @@ void	Webserv::handle_recv(int &event)
 			try
 			{
 				request.insert(std::pair<int, Request *>(arr[i].fd, Request::parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
-				arr[i].events = POLLOUT | POLLHUP | POLLERR | POLLNVAL;
+				arr[i].events = POLLOUT | POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				event--;
 			}
 			catch(std::exception &a)
@@ -126,12 +126,13 @@ void	Webserv::handle_recv(int &event)
 			VirtualServ* point = linkServ.at(arr[i].fd);
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
-			std::cout << "root : " << point->get_root()<< std::endl;
 			if (it->second->response(arr[i].fd, point))
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				delete it->second;
 				request.erase(it);
+				event--;
+				// this->erase(arr[i].fd);
 			}
 			event--;
 		}

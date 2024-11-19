@@ -30,7 +30,12 @@ static int myalnum(int c)
 		return (1);
 	return (0);
 }
-
+static int myascci(int c)
+{
+	if (c != '}' && c != ';' && isascii(c))
+		return (1);
+	return (0);
+}
 static int alnum_path(int c)
 {
 	if (c == '/' || (c != '}' && isalnum(c)))
@@ -65,6 +70,24 @@ void	VirtualServ::root_var(const std::string& line, VirtualServ &serv)
 	std::cout << "root : " << serv.get_root() << std::endl;
 }
 
+void	VirtualServ::default_var(const std::string& line, VirtualServ& serv)
+{
+	std::string	temp = get_value(line, myascci);
+	serv.set_default(temp);
+}
+
+void	VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
+{
+	std::string	temp = get_value(line, myascci);
+	if (temp.find("GET") != std::string::npos)
+		serv.accepted_protocol |= GET;
+	if (temp.find("POST") != std::string::npos)
+		serv.accepted_protocol |= POST;
+	if (temp.find("DELETE") != std::string::npos)
+		serv.accepted_protocol |= DELETE;
+	std::cout << "protocole : " << serv.accepted_protocol << std::endl;
+}
+
 std::map<std::string, ParseFunction> init_static_elem()
 {
 	std::map<std::string, ParseFunction> ret;
@@ -72,17 +95,19 @@ std::map<std::string, ParseFunction> init_static_elem()
 	ret["server_name"] = VirtualServ::server_var;
 	ret["listen"] = VirtualServ::listen_var;
 	ret["root"] = VirtualServ::root_var;
+	ret["default"] = VirtualServ::default_var;
+	ret["protocol"] = VirtualServ::protocol_var;
 	return (ret);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VirtualServ::VirtualServ() : socket_fd(),  port(""), server_name(""), root("")
+VirtualServ::VirtualServ() : socket_fd(),  port(""), server_name(""), root(""), accepted_protocol(0)
 {
 
 }
 
 VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_fd), port(to_copy.port)
-, server_name(to_copy.server_name), root(to_copy.root)
+, server_name(to_copy.server_name), root(to_copy.root), accepted_protocol(to_copy.accepted_protocol)
 {
 
 }
@@ -116,6 +141,11 @@ void	VirtualServ::launch_serv()
 	if (port.size() == 0)
 		throw(std::exception());
 	socket_fd.init_connect(1);
+}
+
+void	VirtualServ::set_default(const std::string& line)
+{
+	default_page = line;
 }
 
 void	VirtualServ::set_launched(bool val)
@@ -165,4 +195,9 @@ std::string	VirtualServ::get_port() const
 int	VirtualServ::get_fd() const
 {
 	return (socket_fd.get_fd());
+}
+
+int VirtualServ::get_protocol() const
+{
+	return (accepted_protocol);
 }

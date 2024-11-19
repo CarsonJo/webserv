@@ -4,6 +4,8 @@ SRC =	main.cpp\
 		Webserv/Fsocket.cpp\
 		Webserv/VirtualServ.cpp\
 		Http_protocol/Request.cpp\
+		Http_protocol/Date.cpp\
+		Http_protocol/Error.cpp\
 		parse_config.cpp\
 		Exception.cpp\
 
