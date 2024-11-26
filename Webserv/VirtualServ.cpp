@@ -58,7 +58,7 @@ void	VirtualServ::listen_var(const std::string &line, VirtualServ &serv)
 
 void	VirtualServ::root_var(const std::string& line, VirtualServ &serv)
 {
-	std::string	temp = REP_SERVER;
+	std::string	temp = ".";
 
 	temp.append(get_value(line, alnum_path));
 	if (access(temp.c_str(), X_OK | R_OK | W_OK))
@@ -101,12 +101,12 @@ std::map<std::string, ParseFunction> init_static_elem()
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VirtualServ::VirtualServ() : socket_fd(),  port(""), server_name(""), root(""), accepted_protocol(0)
+VirtualServ::VirtualServ() : port(""), server_name(""), root(""), accepted_protocol(0)
 {
 
 }
 
-VirtualServ::VirtualServ(const VirtualServ& to_copy) : socket_fd(to_copy.socket_fd), port(to_copy.port)
+VirtualServ::VirtualServ(const VirtualServ& to_copy) : port(to_copy.port)
 , server_name(to_copy.server_name), root(to_copy.root), accepted_protocol(to_copy.accepted_protocol)
 {
 
@@ -126,55 +126,26 @@ VirtualServ::~VirtualServ()
 // }
 
 //verifier ce qui se passe si fail de construction de socket_fd
-VirtualServ::VirtualServ(const Addrinfo& info) : socket_fd(info)
-{
-
-}
-
-int	VirtualServ::accept_connect()
-{
-	return(socket_fd.accept_connect());
-}
-
-void	VirtualServ::launch_serv()
-{
-	if (port.size() == 0)
-		throw(std::exception());
-	socket_fd.init_connect(1);
-}
 
 void	VirtualServ::set_default(const std::string& line)
 {
 	default_page = line;
 }
 
-void	VirtualServ::set_launched(bool val)
-{
-	socket_fd.set_launched(val);
-}
 
 void	VirtualServ::set_name(const std::string &name)
 {
 	this->server_name = name;
 }
 
-void	VirtualServ::set_port(const std::string &port)
+void	VirtualServ::set_port(const std::string &name)
 {
-	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port);
-	Fsocket		temp(test);
-
-	socket_fd = temp;
-	this->port = port;
+	this->port = name;
 }
 
 void	VirtualServ::set_root(const std::string &root)
 {
 	this->root = root;
-}
-
-void	VirtualServ::set_fd(int temp)
-{
-	socket_fd.set_fd(temp);
 }
 
 std::string	VirtualServ::get_root() const
@@ -192,12 +163,16 @@ std::string	VirtualServ::get_port() const
 	return (port);
 }
 
-int	VirtualServ::get_fd() const
-{
-	return (socket_fd.get_fd());
-}
-
 int VirtualServ::get_protocol() const
 {
 	return (accepted_protocol);
+}
+
+void	VirtualServ::operator=(const VirtualServ& serv)
+{
+	port = serv.port;
+	server_name = serv.server_name;
+	root = serv.root;
+	default_page = serv.default_page;
+	accepted_protocol = serv.accepted_protocol;
 }

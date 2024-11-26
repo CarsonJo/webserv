@@ -7,13 +7,16 @@
 # include <unistd.h>
 # include <sys/socket.h>
 # include <fcntl.h>
+# include "ServerBlock.hpp"
 # include "Addrinfo.hpp"
 # include "VirtualServ.hpp"
 # define DISCUSS POLLIN | POLLOUT
-
+# define CLOSE 2
 class Fsocket;
 class VirtualServ;
 class Request;
+class ServerBlock;
+
 class Webserv
 {
 	public :
@@ -25,7 +28,7 @@ class Webserv
 		int				get_size() const;
 		int				get_connect_size() const;
 		void			handle_recv(int &event);
-		void			add_serv(VirtualServ* virtserv);
+		void			add_serv(std::vector<ServerBlock*>& virtserv);
 		void			erase(int fd);
 		void			new_connect(int& event);
 		void			init_all();
@@ -34,12 +37,12 @@ class Webserv
 	private :
 
 		std::vector<struct pollfd>	arr;
-		std::map<int, VirtualServ*>	linkServ;
+		std::map<int, ServerBlock*>	linkServ;
 		std::map<int, Request*>		request;
-		std::vector<VirtualServ *>	virtualserv;
+		std::vector<ServerBlock*>	virtualserv;
 		int							master_socket;
 		Webserv(const Webserv &to_copy);
-		void	add_connect(int fd, int flag, VirtualServ *link);
+		void	add_connect(int fd, int flag, ServerBlock *link);
 		void	operator=(const Webserv &to_copy);
 };
 #endif

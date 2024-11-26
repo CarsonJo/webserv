@@ -7,12 +7,12 @@
 #define SIZE_404	"63"
 #define S404		63
 class VirtualServ;
-typedef	std::string (*Error_function)(VirtualServ* serv);
+typedef	std::string (*Error_function)(const VirtualServ* serv);
 
 class Error
 {
 	public :
-		static std::string	get_error(int code, VirtualServ* serv);
+		static std::string	get_error(int code, const VirtualServ* serv);
 	private :
 		static std::map<int, Error_function> function_arr;
 		Error();

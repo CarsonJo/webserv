@@ -3,6 +3,7 @@ SRC =	main.cpp\
 		Webserv/Addrinfo.cpp\
 		Webserv/Fsocket.cpp\
 		Webserv/VirtualServ.cpp\
+		Webserv/ServerBlock.cpp\
 		Http_protocol/Request.cpp\
 		Http_protocol/Date.cpp\
 		Http_protocol/Error.cpp\

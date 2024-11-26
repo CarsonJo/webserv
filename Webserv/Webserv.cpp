@@ -9,8 +9,8 @@ Webserv::~Webserv()
 {
 	unsigned long i = 0;
 
-	for (i = 0; i < virtualserv.size(); i++)
-		delete virtualserv[i];
+	// for (i = 0; i < virtualserv.size(); i++)
+	// 	delete virtualserv[i];
 	for (i = 0; i < arr.size(); i++)
 		close(arr[i].fd);
 	for (std::map<int, Request*>::iterator it = request.begin(); it != request.end(); it++)
@@ -39,21 +39,18 @@ int	Webserv::get_connect_size() const
 	return (arr.size() - master_socket);
 }
 
-void	Webserv::add_connect(int fd, int flag, VirtualServ *link)
+void	Webserv::add_connect(int fd, int flag, ServerBlock *link)
 {
 	arr.push_back((struct pollfd){.fd = fd, .events = flag, .revents = 0});
-	linkServ.insert(std::pair<int, VirtualServ*>(fd, link));
+	linkServ.insert(std::pair<int, ServerBlock*>(fd, link));
 }
 
-void	Webserv::add_serv(VirtualServ* virtserv)
+void	Webserv::add_serv(std::vector<ServerBlock*>& virtserv)
 {
-	virtualserv.push_back(virtserv);
-}
-
-void	Webserv::add_master(const VirtualServ& virt_serv)
-{
-	arr.push_back((struct pollfd){.fd = virt_serv.get_fd(), .events = POLLIN | POLLHUP | POLLERR | POLLNVAL, .revents = 0});
-	master_socket++;
+	virtualserv = virtserv;
+	for (unsigned long i = 0; i < virtserv.size(); i++)
+		arr.push_back((struct pollfd){.fd = virtserv[i]->get_fd(), .events = POLLIN | POLLHUP | POLLERR | POLLNVAL, .revents= 0});
+	master_socket = virtserv.size();
 }
 
 void	Webserv::erase(int fd)
@@ -123,16 +120,16 @@ void	Webserv::handle_recv(int &event)
 		else if ((arr[i].revents & POLLOUT) != 0)
 		{
 			std::map<int, Request*>::iterator	it = request.find(arr[i].fd);
-			VirtualServ* point = linkServ.at(arr[i].fd);
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
-			if (it->second->response(arr[i].fd, point))
+			if (int error = it->second->response(arr[i].fd))
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				delete it->second;
 				request.erase(it);
 				event--;
-				this->erase(arr[i].fd);
+				if (error == CLOSE)
+					this->erase(arr[i].fd);
 			}
 			event--;
 		}

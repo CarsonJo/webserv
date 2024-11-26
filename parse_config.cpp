@@ -1,8 +1,9 @@
 #include "main.hpp"
 #include "Exception.hpp"
 #include "Webserv/VirtualServ.hpp"
+#include "Webserv/ServerBlock.hpp"
 #include <map>
-
+#include <vector>
 static int	search_block(std::fstream &file, std::string &line)
 {
 	std::size_t	pos = std::string::npos;
@@ -75,10 +76,13 @@ static void config_server(std::fstream &config, std::string &line, VirtualServ& 
 
 int	parse_config(std::string name, Webserv& server)
 {
-	Addrinfo		info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
-	VirtualServ		temp_serv;
-	std::fstream	config;
-	std::string		line;
+	Addrinfo					info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
+	VirtualServ					temp_serv;
+	ServerBlock					temp_block;
+	std::vector<ServerBlock*>	temp_arr;
+	std::fstream				config;
+	std::string					line;
+	int							stop = 0;
 
 	config.open(name.c_str(), std::ofstream::in);
 	if (config.fail())
@@ -88,13 +92,27 @@ int	parse_config(std::string name, Webserv& server)
 	}
 	while (search_block(config, line) != EOF)
 	{
-		temp_serv.set_fd(-1);
-		temp_serv.set_launched(0);
+		stop = 0;
+		temp_block.set_fd(-1);
+		temp_block.set_launched(0);
 		config_server(config, line, temp_serv);
-		temp_serv.launch_serv();
-		server.add_serv(new VirtualServ(temp_serv));
-		server.add_master(temp_serv);
+		for(unsigned long i = 0; i < temp_arr.size(); i++)
+		{
+			if (temp_arr[i]->get_port() == temp_serv.get_port())
+			{
+				temp_arr[i]->add(VirtualServ(temp_serv));
+				stop = 1;
+				break;
+			}
+		}
+		if (stop)
+			continue;
+		temp_block.set_port(temp_serv.get_port());
+		temp_block.add(VirtualServ(temp_serv));
+		temp_block.launch_serv();
+		temp_arr.push_back(new ServerBlock(temp_block));
 	}
-	temp_serv.set_fd(-1);
+	server.add_serv(temp_arr);
+	temp_block.set_fd(-1);
 	return (0);
 }
