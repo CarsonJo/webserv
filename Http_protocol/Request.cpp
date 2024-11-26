@@ -61,7 +61,7 @@ void	Request::parsed_header(std::string& to_parsed, std::size_t& pos, Request* r
 					ret->serv  = serv->unique();
 			}
 			else
-				pos = to_parsed.substr(pos).find_first_of("\n");
+				pos += to_parsed.substr(pos).find_first_of("\n");
 		}
 	}
 	catch(const std::exception& e)
@@ -112,7 +112,7 @@ Request* Request::parsedRequest(int fd, ServerBlock *serv)
 	catch(const std::exception& e)
 	{
 		delete ret;
-		return (ret);
+		throw(e);
 	}
 	return (ret);
 }
@@ -145,6 +145,7 @@ static std::string find_file_size(std::fstream& file)
 	file.seekg(0, file.end);
 	std::stringstream	stream;
 	stream << (static_cast<long>(file.tellg() - begin));
+	file.seekg(0, file.beg);
 	return (stream.str());
 }
 

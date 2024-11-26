@@ -72,7 +72,7 @@ void	Webserv::new_connect(int &event)
 {
 	int			fd;
 
-	for (int i = 0; i < master_socket; i++)
+	for (int i = 0; i < master_socket && event > 0; i++)
 	{
 		if (arr[i].revents == POLLIN)
 		{
@@ -122,7 +122,8 @@ void	Webserv::handle_recv(int &event)
 			std::map<int, Request*>::iterator	it = request.find(arr[i].fd);
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
-			if (int error = it->second->response(arr[i].fd))
+			int error = it->second->response(arr[i].fd);
+			if (error)
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				delete it->second;
