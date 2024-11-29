@@ -1,8 +1,7 @@
 # include "VirtualServ.hpp"
 #include <iostream>
-std::map<std::string, ParseFunction> init_static_elem();
 
-std::map<std::string, ParseFunction> VirtualServ::server_elem = init_static_elem();
+std::map<std::string, ServerParseFunction> VirtualServ::server_elem = VirtualServ::init_static_elem();
 
 std::string	get_value(const std::string& line, int (*f)(int))
 {
@@ -24,12 +23,13 @@ std::string	get_value(const std::string& line, int (*f)(int))
 	return (line.substr(temp, j));
 }
 
-static int myalnum(int c)
+/*static int myalnum(int c)
 {
 	if (c != '}' && isalnum(c))
 		return (1);
 	return (0);
 }
+*/
 static int myascci(int c)
 {
 	if (c != '}' && c != ';' && isascii(c))
@@ -46,8 +46,7 @@ static int alnum_path(int c)
 void	VirtualServ::server_var(const std::string &line, VirtualServ &serv)
 {
 	//mettre unb name par defaut au cas ou server name apparait deux fois dans le fichier de config
-	std::string	temp = get_value(line, myalnum);
-	serv.set_name(temp);
+	serv.set_name(line);
 }
 
 void	VirtualServ::listen_var(const std::string &line, VirtualServ &serv)
@@ -88,9 +87,9 @@ void	VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
 	std::cout << "protocole : " << serv.accepted_protocol << std::endl;
 }
 
-std::map<std::string, ParseFunction> init_static_elem()
+std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()
 {
-	std::map<std::string, ParseFunction> ret;
+	std::map<std::string, ServerParseFunction> ret;
 
 	ret["server_name"] = VirtualServ::server_var;
 	ret["listen"] = VirtualServ::listen_var;
@@ -106,11 +105,7 @@ VirtualServ::VirtualServ() : port(""), server_name(""), root(""), accepted_proto
 
 }
 
-VirtualServ::VirtualServ(const VirtualServ& to_copy) : port(to_copy.port)
-, server_name(to_copy.server_name), root(to_copy.root), accepted_protocol(to_copy.accepted_protocol)
-{
 
-}
 
 VirtualServ::~VirtualServ()
 {
@@ -168,11 +163,69 @@ int VirtualServ::get_protocol() const
 	return (accepted_protocol);
 }
 
-void	VirtualServ::operator=(const VirtualServ& serv)
-{
-	port = serv.port;
-	server_name = serv.server_name;
-	root = serv.root;
-	default_page = serv.default_page;
-	accepted_protocol = serv.accepted_protocol;
+
+std::map<std::string, ParseFunction> Route::route_directives = Route::init_route_directives();
+
+Route::Route() : autoindex(false), allowed_methods(0) {}
+Route::~Route() {}
+
+void Route::set_location(const std::string& loc) { location = loc; }
+void Route::set_root(const std::string& root) { this->root = root; }
+void Route::set_autoindex(bool index) { autoindex = index; }
+void Route::set_methods(int methods) { allowed_methods = methods; }
+
+const std::string& Route::get_location() const { return location; }
+const std::string& Route::get_root() const { return root; }
+bool Route::is_autoindex() const { return autoindex; }
+int Route::get_methods() const { return allowed_methods; }
+
+std::map<std::string, ParseFunction> Route::init_route_directives() {
+    std::map<std::string, ParseFunction> ret;
+
+    ret["location"] = Route::location_var;
+    ret["root"] = Route::root_var;
+    ret["autoindex"] = Route::autoindex_var;
+    ret["methods"] = Route::methods_var;
+
+    return ret;
+}
+
+void Route::location_var(const std::string& line, Route& route) {
+    route.set_location(get_value(line, alnum_path));
+}
+
+void Route::root_var(const std::string& line, Route& route) {
+    std::string temp = "." + get_value(line, alnum_path);
+    if (access(temp.c_str(), X_OK | R_OK | W_OK)) {
+        perror(temp.c_str());
+        throw(std::exception());
+    }
+    route.set_root(temp);
+}
+
+void Route::autoindex_var(const std::string& line, Route& route) {
+    std::string temp = get_value(line, myascci);
+    route.set_autoindex(temp == "on");
+}
+
+void Route::methods_var(const std::string& line, Route& route) {
+    std::string temp = get_value(line, myascci);
+    int methods = 0;
+    if (temp.find("GET") != std::string::npos)
+        methods |= 1;
+    if (temp.find("POST") != std::string::npos)
+        methods |= 2;
+    if (temp.find("DELETE") != std::string::npos)
+        methods |= 4;
+    route.set_methods(methods);
+}
+
+
+void VirtualServ::add_route(const Route& route) {
+     routes[route.get_location()] = route; 
+}
+
+
+const std::map<std::string, Route>& VirtualServ::get_routes() const {
+    return routes; 
 }

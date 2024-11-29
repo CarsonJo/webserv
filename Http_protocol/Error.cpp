@@ -1,12 +1,12 @@
 #include "Error.hpp"
 
-std::string	e406(VirtualServ* serv);
-std::string	e405(VirtualServ* serv);
-std::string	e404(VirtualServ* serv);
-std::string	e403(VirtualServ* serv);
-std::string	e413(VirtualServ* serv);
-std::string	e500(VirtualServ* serv);
-std::string	e400(VirtualServ* serv);
+std::string	e406(const VirtualServ* serv);
+std::string	e405(const VirtualServ* serv);
+std::string	e404(const VirtualServ* serv);
+std::string	e403(const VirtualServ* serv);
+std::string	e413(const VirtualServ* serv);
+std::string	e500(const VirtualServ* serv);
+std::string	e400(const VirtualServ* serv);
 
 std::map<int, Error_function> fill_function()
 {

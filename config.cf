@@ -1,11 +1,9 @@
-server
-{
+server{
 	server_name 	 	nom;
 	listen 				8080;
 	root /root/server1;
 	default	index.html;
 	protocol	GET POST;
-
 }
 
 server{
