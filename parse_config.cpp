@@ -85,15 +85,20 @@ static void parse_route(std::fstream &config, std::string &line, VirtualServ &se
         }
     }
 
+
 	const std::map<std::string, Route>& existing_routes = server.get_routes();
 	if (existing_routes.find(route.get_location()) != existing_routes.end()) {
     std::cerr << "Error: Duplicate location detected: " << route.get_location() << "\n";
     throw std::exception();
 	}
-
+	
+	 if (route.is_cgi_enabled() && route.get_upload_path().size() > 0) {
+        std::cerr << "Error: A route cannot have both CGI enabled and an upload path set.\n";
+        throw std::runtime_error("Route conflict: CGI and upload path cannot coexist.");
+    }
    
     if (route.get_location() != "" && route.get_methods() != 0) {
-        server.add_route(route);
+        server.add_route(Route(route)); 
     } else {
         std::cerr << "Error: Invalid route. Must have a location and at least one allowed method.\n";
 		throw std::exception();
@@ -178,15 +183,14 @@ void config_server(std::fstream &config, std::string &line, VirtualServ &server)
         std::cerr << "Error: Missing closing brace in server block.\n";
         throw std::exception();
     }
-	
+
+
 }
 
 
 int	parse_config(std::string name, Webserv& server)
 {
 	Addrinfo					info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
-	VirtualServ					temp_serv;
-	ServerBlock					temp_block;
 	std::vector<ServerBlock*>	temp_arr;
 	std::fstream				config;
 	std::string					line;
@@ -200,6 +204,8 @@ int	parse_config(std::string name, Webserv& server)
 	}
 	while (search_block(config, line) != EOF)
 	{
+		VirtualServ					temp_serv;
+		ServerBlock					temp_block;
 		stop = 0;
 		temp_block.set_fd(-1);
 		temp_block.set_launched(0);
@@ -214,13 +220,17 @@ int	parse_config(std::string name, Webserv& server)
 			}
 		}
 		if (stop)
+		{
+			temp_block.set_fd(-1);
 			continue;
+		}
 		temp_block.set_port(temp_serv.get_port());
+		// check si meme server name a faire
 		temp_block.add(VirtualServ(temp_serv));
 		temp_block.launch_serv();
 		temp_arr.push_back(new ServerBlock(temp_block));
+		temp_block.set_fd(-1);
 	}
 	server.add_serv(temp_arr);
-	temp_block.set_fd(-1);
 	return (0);
 }

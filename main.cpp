@@ -7,6 +7,7 @@ int main()
 	int			a = 0;
 
 	parse_config("config.cf", poll_test);
+
 	try
 	{
 		while (1)
