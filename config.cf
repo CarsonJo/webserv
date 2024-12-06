@@ -4,7 +4,7 @@ server{
 	root /root/server1;
 	default	/root/server1/index.html;
 	protocol	GET POST;
-
+	host	127.0.0.1;
 	{
 		location /test;
 		methods GET;

@@ -3,7 +3,8 @@
 #include "Request.hpp"
 #include "../Webserv/ServerBlock.hpp"
 
-typedef void (*Parsed_header)(Request*, std::string& toRead, std::size_t& pos);
+class Request;
+typedef void (*Parsed_header)(Request*, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 
 class Http_header
 {
@@ -15,7 +16,7 @@ class Http_header
 		static void	status(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 		static void	authorization(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 		static void	host(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
-
+		static std::map<std::string, Parsed_header>	header_func;
 	private :
 		Http_header();
 

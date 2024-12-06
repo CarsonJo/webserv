@@ -9,6 +9,7 @@
 # include <fcntl.h>
 # include "Addrinfo.hpp"
 # include "../Http_protocol/Request.hpp"
+#include "../Http_protocol/req_function.hpp"
 # define DISCUSS POLLIN | POLLOUT
 # define CLOSE 2
 class Fsocket;

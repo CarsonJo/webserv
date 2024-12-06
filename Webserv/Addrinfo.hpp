@@ -12,7 +12,7 @@ class Addrinfo
 	public :
 
 		Addrinfo();
-		Addrinfo(int family, int socktype, int protocol, int flags, const std::string &port);
+		Addrinfo(int family, int socktype, int protocol, int flags, const std::string &port, const char *ip);
 		Addrinfo(const Addrinfo& to_copy);
 		~Addrinfo();
 		int						get_family() const;
@@ -28,6 +28,7 @@ class Addrinfo
 		struct addrinfo	hints;
 		struct addrinfo	*res;
 		std::string		port;
+		std::string		ip;
 };
 
 #endif

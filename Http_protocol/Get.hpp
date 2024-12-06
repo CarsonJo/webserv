@@ -3,6 +3,8 @@
 #include <string>
 #include "Request.hpp"
 
+class Request;
+
 class Get : public Request
 {
 	public :

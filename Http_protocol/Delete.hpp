@@ -2,6 +2,8 @@
 #define DELETE_HPP
 #include <string>
 #include "Request.hpp"
+
+class Request;
 class Delete : public Request
 {
 	public :

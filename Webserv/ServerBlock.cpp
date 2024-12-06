@@ -22,10 +22,6 @@ void	ServerBlock::set_fd(int temp)
 
 void	ServerBlock::set_port(const std::string &port)
 {
-	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port);
-	Fsocket		temp(test);
-
-	socket_fd = temp;
 	this->port = port;
 }
 
@@ -62,6 +58,21 @@ std::string	ServerBlock::get_port() const
 {
 	return (port);
 }
+
+std::string	ServerBlock::get_host() const
+{
+	return (host);
+}
+
+void	ServerBlock::set_host(const std::string& temp)
+{
+	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port, temp.c_str());
+	Fsocket		sock(test);
+
+	socket_fd = sock;
+	host = temp;
+}
+
 std::map<std::string, VirtualServ>::iterator	ServerBlock::end()
 {
 	return (arr.end());

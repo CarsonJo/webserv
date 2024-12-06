@@ -36,12 +36,10 @@ class Fsocket
 				throw(std::exception());
 			launched = 1;
 		};
-		std::string	get_addr() const;
 		Fsocket();
 		Fsocket(const Fsocket& to_copy);
 		Fsocket(const Addrinfo &info);
 		void	operator=(const Fsocket& to_copy);
 		~Fsocket();
 };
-
 #endif

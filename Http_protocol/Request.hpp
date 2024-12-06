@@ -1,28 +1,20 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 #include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <dirent.h>
 #include <exception>
 #include <iostream>
-#include <sstream>
 #include <string>
-#include "../Webserv/ServerBlock.hpp"
 #include "../Webserv/VirtualServ.hpp"
 #include "Date.hpp"
-#include "Get.hpp"
-#include "Post.hpp"
-#include "Delete.hpp"
 #include "Error.hpp"
 #include "Http_header.hpp"
+#include "../Webserv/lib_function.hpp"
 # define CLOSE 2
 # define PROTOCOLE "Http/1.1"
 # define GATEWAY "CGI/1.1"
 class VirtualServ;
 class ServerBlock;
-
+class Get;
 int	handle_error(int fd, const VirtualServ* server, std::string error_code, int error);
 
 class Test : public std::exception
@@ -37,15 +29,11 @@ class Request
 {
 	public :
 
-		static Request*		parsedRequest(int fd, ServerBlock *serv);
-		static int			parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
-		static std::string	parse_response(char *buff, Request* req);
-		static void	parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
 		Request();
 		virtual ~Request();
 		virtual int			response(int fd) = 0;
 		virtual std::string	type() = 0;
-		static std::map<std::string, Parsed_header>	header_func;
+
 
 		void								set_location(const std::string& str);
 		void								set_status(const std::string& str);
@@ -54,12 +42,15 @@ class Request
 		void								set_content_type(const std::string& str);
 		void								set_serv(const VirtualServ* to_set);
 		std::map<std::string, std::string>&	get_cgi_env();
-
+		friend Request* 		checkRequest(const std::string& temp);
+		friend Request*		parsedRequest(int fd, ServerBlock *serv);
+		friend int				parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
+		friend std::string		parse_response(char *buff, Request* req);
+		friend void			parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
 	protected:
 
 		int						fd;
 		std::string				error_header(int code);
-		static Request* 		checkRequest(const std::string& temp);
 		std::map<std::string, std::string>			cgi_env;
 		std::string				location;
 		std::string				status;

@@ -38,20 +38,20 @@ static void	set_my_env(char **envp, std::map<std::string, std::string>& env)
 		stcpy(envp[i], (it->first + it->second).c_str(), 200);
 }
 
-std::string	Request::parse_response(char *buff, Request *req)
-{
-	std::string	buff2 = buff;
-	std::size_t	pos = 0;
+// std::string	Request::parse_response(char *buff, Request *req)
+// {
+// 	std::string	buff2 = buff;
+// 	std::size_t	pos = 0;
 
-	try
-	{
-		while(1)
-		{
-			if (next_word_cgi(buff2, pos) == "Location:")
-				req->location = next_word_cgi(buff2, pos);
-		}
-	}
-}
+// 	try
+// 	{
+// 		while(1)
+// 		{
+// 			if (next_word_cgi(buff2, pos) == "Location:")
+// 				req->location = next_word_cgi(buff2, pos);
+// 		}
+// 	}
+// }
 
 int	Post::response(int fd)
 {
@@ -73,7 +73,7 @@ int	Post::response(int fd)
 		return (Error::handle_error(fd, serv, "405", 405));
 	if (!pid)
 	{
-		char **envp;
+		char **envp = 0;
 		if (dup2(p_write[0], 0) == -1)
 			std::exit(0);
 		if (dup2(p_read[1], 1) == -1)
@@ -86,7 +86,7 @@ int	Post::response(int fd)
 		cgi_env["SERVER_NAME"] = serv->get_name();
 		cgi_env["SCRIPT_NAME"] = target;
 		set_my_env(envp, cgi_env);
-		if (execve(target.c_str(), 0, envp) == -1)
+		if (execve(target.c_str(), envp, envp) == -1)
 			std::exit(0);
 	}
 	else
@@ -94,13 +94,13 @@ int	Post::response(int fd)
 		int status;
 		close(p_write[0]);
 		close(p_read[1]);
-		if (write(p_write[1], body.c_str(), body.size()) < body.size())//attention write peut bloquer set up les pipe en non bloquant d'abord avec fcntl peut etre?
+		if ((std::size_t)write(p_write[1], body.c_str(), body.size()) < body.size())//attention write peut bloquer set up les pipe en non bloquant d'abord avec fcntl peut etre?
 			throw (std::exception());
 		read(p_read[0], &buff[0], 8196);//mettre le read en non bloquant sinon les problemes;
 		waitpid(pid, &status, 0); //WNOHANG option pour etre non bloquant;
 		close(p_write[1]);
 		close(p_read[0]);//si waitpid non bloquant
-		std::string response = parse_response(&buff[0]);
+		// std::string response = parse_response(&buff[0]);
 	}
 	write(fd, "POST received\n", 15);
 	return (1);

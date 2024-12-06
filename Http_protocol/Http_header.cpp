@@ -1,5 +1,20 @@
 #include "Http_header.hpp"
 
+std::map<std::string, Parsed_header> make_header_func()
+{
+	std::map<std::string, Parsed_header>	ret;
+
+	ret["Content-Type:"] = Http_header::content_type;
+	ret["Content-Length:"] = Http_header::content_length;
+	ret["Location:"] = Http_header::location;
+	ret["Status:"] = Http_header::status;
+	// ret["Authorization"] = Http_header::authorization;
+	ret["Host:"] = Http_header::host;
+	return (ret);
+}
+
+std::map<std::string, Parsed_header> Http_header::header_func = make_header_func();
+
 static std::string	next_word(std::string& sub, std::size_t& i, const char* delim)
 {
 	std::string	ret = sub.substr(i);
@@ -24,6 +39,7 @@ static std::string	next_word(std::string& sub, std::size_t& i, const char* delim
 
 void	Http_header::location(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
 {
+	(void)serv;
 	std::string	temp = toRead.substr(pos);
 	std::size_t	end = temp.find("\n");
 
@@ -34,6 +50,7 @@ void	Http_header::location(Request *req, std::string& toRead, std::size_t& pos, 
 
 void	Http_header::content_length(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
 {
+	(void)serv;
 	std::string	temp = toRead.substr(pos);
 	std::size_t	end = temp.find("\n");
 
@@ -44,6 +61,7 @@ void	Http_header::content_length(Request *req, std::string& toRead, std::size_t&
 
 void	Http_header::content_type(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
 {
+	(void)serv;
 	std::string	temp = toRead.substr(pos);
 	std::size_t	end = temp.find("\n");
 
@@ -54,6 +72,7 @@ void	Http_header::content_type(Request *req, std::string& toRead, std::size_t& p
 
 void	Http_header::status(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
 {
+	(void)serv;
 	std::string	temp = toRead.substr(pos);
 	std::size_t	end = temp.find("\n");
 
@@ -64,6 +83,7 @@ void	Http_header::status(Request *req, std::string& toRead, std::size_t& pos, Se
 
 void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
 {
+	(void)serv;
 	std::string	temp = toRead.substr(pos);
 	std::size_t	end = temp.find("\n");
 
@@ -72,7 +92,7 @@ void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, Serv
 	req->set_serv(serv->find(next_word(toRead, pos, " \t\r\n:"), next_word(toRead, pos, " \t\r\n")));
 }
 
-void	Http_header::location(Request *req, std::string& toRead, std::size_t& pos)
-{
+// void	Http_header::auth(Request *req, std::string& toRead, std::size_t& pos)
+// {
 
-}
+// }

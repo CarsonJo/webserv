@@ -190,7 +190,6 @@ void config_server(std::fstream &config, std::string &line, VirtualServ &server)
 
 int	parse_config(std::string name, Webserv& server)
 {
-	Addrinfo					info(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, "3246");
 	std::vector<ServerBlock*>	temp_arr;
 	std::fstream				config;
 	std::string					line;
@@ -212,7 +211,7 @@ int	parse_config(std::string name, Webserv& server)
 		config_server(config, line, temp_serv);
 		for(unsigned long i = 0; i < temp_arr.size(); i++)
 		{
-			if (temp_arr[i]->get_port() == temp_serv.get_port())// a changer
+			if (temp_arr[i]->get_port() == temp_serv.get_port() && temp_arr[i]->get_host() == temp_serv.get_host())
 			{
 				temp_arr[i]->add(VirtualServ(temp_serv));
 				stop = 1;
@@ -225,6 +224,7 @@ int	parse_config(std::string name, Webserv& server)
 			continue;
 		}
 		temp_block.set_port(temp_serv.get_port());
+		temp_block.set_host(temp_serv.get_host());
 		// check si meme server name a faire
 		temp_block.add(VirtualServ(temp_serv));
 		temp_block.launch_serv();
