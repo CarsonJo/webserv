@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    server_name example.com;
+z
+    {
+        location /images;
+        autoindex on;
+        methods GET POST;
+    }
+    {
+        location /videos;
+        autoindex off;
+        methods GET;
+    }
+}

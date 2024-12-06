@@ -1,33 +1,16 @@
-server
-{
+server{
 	server_name 	 	nom;
 	listen 				8080;
 	root /root/server1;
-	default	index.html;
+	default	/root/server1/index.html;
 	protocol	GET POST;
 
-}
+	{
+		location /test;
+		methods GET;
+		autoindex on;
+		default /root/server1/index.html;
+		cgi on;
 
-server{
-	server_name deuxieme;
-	listen	8080;
-	root	 /root/server2;
-	default	index.html;
-	protocol	GET,adfPOSTzvzxcv,DELETE;
-}
-
-server{
-	server_name troisieme;
-	listen 5050;
-	root	/root/server3;
-	default	index.html;
-	protocol	GETfq  fqPOSTvrg5qrDELETE;
-}
-
-server{
-	server_name quatrieme;
-	listen 6060;
-	root	/root/server4;
-	default index.html;
-	protocol	GET4553 1qfPOSTasdf a42DELETE;
+	}
 }
