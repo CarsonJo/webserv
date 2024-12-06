@@ -98,7 +98,7 @@ void	Webserv::handle_recv(int &event)
 {
 	for (unsigned long i = master_socket; i < arr.size() && event > 0; i++)
 	{
-		if ((arr[i].revents & POLLIN) != 0)
+		if ((arr[i].revents & POLLIN) != 0) //bug si plusieurs requete en meme temps ?
 		{
 			try
 			{
@@ -123,6 +123,7 @@ void	Webserv::handle_recv(int &event)
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
 			int error = it->second->response(arr[i].fd);
+			std::cout << "Error: " << error <<std::endl;
 			if (error)
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
@@ -130,7 +131,10 @@ void	Webserv::handle_recv(int &event)
 				request.erase(it);
 				event--;
 				if (error == CLOSE)
+				{
+					std::cout << "removed" <<std::endl;
 					this->erase(arr[i].fd);
+				}
 			}
 			event--;
 		}

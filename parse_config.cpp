@@ -108,7 +108,7 @@ int	parse_config(std::string name, Webserv& server)
 		if (stop)
 			continue;
 		temp_block.set_port(temp_serv.get_port());
-		temp_block.add(VirtualServ(temp_serv));
+		temp_block.set_default(VirtualServ(temp_serv));
 		temp_block.launch_serv();
 		temp_arr.push_back(new ServerBlock(temp_block));
 	}

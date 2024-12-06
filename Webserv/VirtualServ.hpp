@@ -10,8 +10,6 @@
 # include <unistd.h>
 # include "Addrinfo.hpp"
 # include "Fsocket.hpp"
-# include "Webserv.hpp"
-# include "../Http_protocol/Request.hpp"
 // # define REP_SERVER "/home/cjozefzo/Documents/cursus42/webserv"
 # define GET 1
 # define POST 2

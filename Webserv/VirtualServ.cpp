@@ -48,6 +48,7 @@ void	VirtualServ::server_var(const std::string &line, VirtualServ &serv)
 	//mettre unb name par defaut au cas ou server name apparait deux fois dans le fichier de config
 	std::string	temp = get_value(line, myalnum);
 	serv.set_name(temp);
+	std::cout << "/" << temp << "/" << std::endl;
 }
 
 void	VirtualServ::listen_var(const std::string &line, VirtualServ &serv)

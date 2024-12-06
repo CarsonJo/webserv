@@ -10,7 +10,7 @@ server
 
 server{
 	server_name deuxieme;
-	listen	3246;
+	listen	8080;
 	root	 /root/server2;
 	default	index.html;
 	protocol	GET,adfPOSTzvzxcv,DELETE;

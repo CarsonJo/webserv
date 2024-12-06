@@ -48,7 +48,14 @@ void	ServerBlock::set_launched(bool val)
 
 void ServerBlock::add(const VirtualServ& serv)
 {
-	arr[serv.get_name()] = serv;
+	arr[serv.get_name()] = serv; // const assign to non const problem ?
+
+}
+// copie partout pas opti
+void	ServerBlock::set_default(const VirtualServ& serv)
+{
+	def = serv;
+	add(serv);
 }
 
 std::string	ServerBlock::get_port() const
@@ -60,12 +67,20 @@ std::map<std::string, VirtualServ>::iterator	ServerBlock::end()
 	return (arr.end());
 }
 
-VirtualServ* ServerBlock::find(const std::string& name)
+VirtualServ* ServerBlock::find(const std::string& name, const std::string& t_port)//retourner un const virtualserv?
 {
 	std::map<std::string, VirtualServ>::iterator	it = arr.find(name);
-	if (it == arr.end())
-		return (0);
-	return (&it->second);
+
+	if (it != arr.end())
+	{
+		if (t_port.size() == 0 && it->second.get_port() == "80")
+			return (&it->second);
+		else if (t_port == it->second.get_port())
+			return (&it->second);
+	}
+	else if ((name == host || host == DEFAULT_IP) && t_port == port)
+		return (&def);
+	return (0);
 }
 
 VirtualServ* ServerBlock::unique()
@@ -73,4 +88,9 @@ VirtualServ* ServerBlock::unique()
 	if (arr.size() == 1)
 		return (&arr.begin()->second);
 	return (0);
+}
+
+VirtualServ* ServerBlock::get_default()
+{
+	return (&def);
 }

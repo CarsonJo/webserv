@@ -1,12 +1,12 @@
 #include "Error.hpp"
 
-std::string	e406(VirtualServ* serv);
-std::string	e405(VirtualServ* serv);
-std::string	e404(VirtualServ* serv);
-std::string	e403(VirtualServ* serv);
-std::string	e413(VirtualServ* serv);
-std::string	e500(VirtualServ* serv);
-std::string	e400(VirtualServ* serv);
+std::string	e406(const VirtualServ* serv);
+std::string	e405(const VirtualServ* serv);
+std::string	e404(const VirtualServ* serv);
+std::string	e403(const VirtualServ* serv);
+std::string	e413(const VirtualServ* serv);
+std::string	e500(const VirtualServ* serv);
+std::string	e400(const VirtualServ* serv);
 
 std::map<int, Error_function> fill_function()
 {
@@ -22,11 +22,55 @@ std::map<int, Error_function> fill_function()
 	return (ret);
 }
 
+Error::Error() : fd(-1), serv(0), error(0), str_error("")
+{
+
+}
+
+Error::Error(int fd, const VirtualServ* serv, int error, std::string str_error) :
+	fd(fd), serv(serv), error(error), str_error(str_error)
+{
+
+}
+
+void	Error::set_error(int fd, const VirtualServ* serv, std::string str_error, int error)
+{
+	this->fd = fd;
+	this->serv = serv;
+	this->error = error;
+	this->str_error = str_error;
+}
+
+int	Error::trap_card_activate()
+{
+	if (!*this)
+		throw(std::exception());
+	return (handle_error(fd, serv, str_error, error));
+}
+
 std::map<int, Error_function>Error::function_arr = fill_function();
 
 std::string	Error::get_error(int code, const VirtualServ* serv)
 {
 	return (function_arr.at(code)(serv));
+}
+
+int	Error::handle_error(int fd, const VirtualServ* server, std::string error_code, int error)
+{
+	std::string header;
+
+
+	header.append("HTTP/1.1 ").append(error_code).append(Error::get_error(error, server));
+	std::cout << "ERROR: " << header << std::endl;
+	write(fd, header.c_str(), header.size());
+	return (2);
+}
+
+Error::operator bool() const
+{
+	if (fd == -1 || serv == 0)
+		return (0);
+	return (1);
 }
 
 std::string	e405(const VirtualServ* serv)

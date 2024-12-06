@@ -7,9 +7,8 @@
 # include <unistd.h>
 # include <sys/socket.h>
 # include <fcntl.h>
-# include "ServerBlock.hpp"
 # include "Addrinfo.hpp"
-# include "VirtualServ.hpp"
+# include "../Http_protocol/Request.hpp"
 # define DISCUSS POLLIN | POLLOUT
 # define CLOSE 2
 class Fsocket;

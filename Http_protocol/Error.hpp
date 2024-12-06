@@ -2,6 +2,7 @@
 #define ERROR_HPP
 #include <string>
 #include <map>
+#include "Date.hpp"
 #include "../Webserv/VirtualServ.hpp"
 #define ROOT "/home/cjozefzo/Documents/cursus42/webserv/root/404.html"
 #define SIZE_404	"63"
@@ -12,9 +13,20 @@ typedef	std::string (*Error_function)(const VirtualServ* serv);
 class Error
 {
 	public :
-		static std::string	get_error(int code, const VirtualServ* serv);
-	private :
-		static std::map<int, Error_function> function_arr;
+
 		Error();
+		Error(int fd, const VirtualServ* serv, int error, std::string str_error);
+		static int					handle_error(int fd, const VirtualServ* serv, std::string error_code, int error);
+		static std::string	get_error(int code, const VirtualServ* serv);
+		void				set_error(int fd, const VirtualServ* serv, std::string error_code, int error);
+		int					trap_card_activate();
+		operator	bool() const;
+	private :
+
+		int					fd;
+		const VirtualServ*	serv;
+		int					error;
+		std::string			str_error;
+		static std::map<int, Error_function> function_arr;
 };
 #endif

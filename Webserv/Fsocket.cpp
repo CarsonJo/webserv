@@ -41,14 +41,21 @@ void	Fsocket::set_fd(int temp)
 	fd = temp;
 }
 
+void	Fsocket::set_launched(bool val)
+{
+	launched = val;
+}
+
 int	Fsocket::get_fd() const
 {
 	return (fd);
 }
 
-void	Fsocket::set_launched(bool val)
+std::string	Fsocket::get_addr() const
 {
-	launched = val;
+	struct sockaddr	ret;
+
+	getsockname(fd, )
 }
 
 void Fsocket::operator=(const Fsocket& to_copy)
