@@ -8,7 +8,7 @@ int myascci(int c)
 }
 int alnum_path(int c)
 {
-	if (c == '/' || (c != '}' && isalnum(c)))
+	if (c == '/' || c== '.'|| isalnum(c))
 		return (1);
 	return (0);
 }
@@ -28,7 +28,7 @@ bool is_file(const std::string &path) {
 void check_directory_path(const std::string& path) {
 
 
-    std::string temp = "." + path;
+    std::string temp = path;
 
 
 
@@ -44,7 +44,7 @@ void check_directory_path(const std::string& path) {
 
 void check_file_path(const std::string& path) {
 
-    std::string temp = "." + path;
+    std::string temp = path;
 
 
     if (!is_file(temp)) {

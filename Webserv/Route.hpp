@@ -26,7 +26,7 @@ public:
         this->allowed_methods = other.allowed_methods;
         this->autoindex = other.autoindex;
 		this->cgi_enabled = other.cgi_enabled;
-
+		this->default_page = other.default_page;
     }
 
     Route& operator=(const Route& other) {
@@ -36,14 +36,14 @@ public:
             this->allowed_methods = other.allowed_methods;
             this->autoindex = other.autoindex;
 			this->cgi_enabled = other.cgi_enabled;
-
+			this->default_page = other.default_page;
         }
         return *this;
     }
 
 
-    const std::string& get_location() const;
-    const std::string& get_root() const;
+    std::string get_location() const;
+    std::string get_root() const;
 	const std::string& get_default() const;
     bool is_autoindex() const;
     int get_methods() const;

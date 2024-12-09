@@ -33,7 +33,7 @@ public:
     void set_port(const std::string& port);
 	void set_host(const std::string& host);
 
-
+	const Route& get_default_route() const;
     std::string get_name() const;
     std::string get_port() const;
 	std::string get_host() const;
@@ -61,6 +61,7 @@ private:
     std::string root;
 	std::string host;
     std::string default_page;
+	Route						default_route;
     int accepted_protocol;
 
     std::map<std::string, Route> routes;

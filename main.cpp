@@ -14,7 +14,7 @@ int main()
 		{
 			if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 0)) > 0)
 			{
-				std::cout << "enter" << std::endl;
+				std::cerr << "enter" << std::endl;
 				poll_test.new_connect(err);
 				poll_test.handle_recv(err);
 				a++;

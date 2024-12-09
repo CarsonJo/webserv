@@ -61,14 +61,14 @@ int	Error::handle_error(int fd, const VirtualServ* server, std::string error_cod
 
 
 	header.append("HTTP/1.1 ").append(error_code).append(Error::get_error(error, server));
-	std::cout << "ERROR: " << header << std::endl;
+	std::cerr << "ERROR: " << header << std::endl;
 	write(fd, header.c_str(), header.size());
 	return (2);
 }
 
 Error::operator bool() const
 {
-	if (fd == -1 || serv == 0)
+	if (fd == -1)
 		return (0);
 	return (1);
 }
@@ -140,10 +140,10 @@ std::string	e404(const VirtualServ* serv)
 	(void)serv;
 	// f.open(ROOT, std::fstream::in);
 	// if (!f.is_open())
-	// 	std::cout << "asdfasdf" << std::endl;
+	// 	std::cerr << "asdfasdf" << std::endl;
 	// f.read(&buff[0], S404);
 	// a = f.gcount();
-	// std::cout << a << buff << std::endl;
+	// std::cerr << a << buff << std::endl;
 	ret.append(" Not Found\r\n");//.append("Content-Length: ").append(SIZE_404).append("\r\nContent-Type: text/html\r\n\r\n")
 	//.append(std::string(buff));
 

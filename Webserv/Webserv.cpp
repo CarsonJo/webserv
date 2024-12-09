@@ -71,12 +71,12 @@ void	Webserv::erase(int fd)
 void	Webserv::new_connect(int &event)
 {
 	int			fd;
-
+	
 	for (int i = 0; i < master_socket && event > 0; i++)
 	{
 		if (arr[i].revents == POLLIN)
 		{
-			std::cout << "add" << std::endl;
+			std::cerr << "add" << std::endl;
 			fd = virtualserv[i]->accept_connect();
 			if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 				throw(std::exception());
@@ -108,7 +108,7 @@ void	Webserv::handle_recv(int &event)
 			}
 			catch(std::exception &a)
 			{
-				std::cout<<"removed" << std::endl;
+				std::cerr<<"removed" << std::endl;
 				std::map<int, Request*>::iterator	it = request.find(arr[i].fd); //ne devrait jamais trouver
 				if (it != request.end())
 					request.erase(request.find(arr[i].fd));//ne devrait jamais s'executer
@@ -123,16 +123,15 @@ void	Webserv::handle_recv(int &event)
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
 			int error = it->second->response(arr[i].fd);
-			std::cout << "Error: " << error <<std::endl;
+			std::cerr << "Error: " << error <<std::endl;
 			if (error)
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				delete it->second;
 				request.erase(it);
-				event--;
 				if (error == CLOSE)
 				{
-					std::cout << "removed" <<std::endl;
+					std::cerr << "removed2" <<std::endl;
 					this->erase(arr[i].fd);
 				}
 			}

@@ -8,7 +8,7 @@ void	VirtualServ::server_var(const std::string &line, VirtualServ &serv)
 {
 	std::string	temp = get_value(line, isalnum);
 	serv.set_name(temp);
-	std::cout << "/" << temp << "/" << std::endl;
+	std::cerr << "/" << temp << "/" << std::endl;
 }
 
 void VirtualServ::add_route(const Route& route) {
@@ -35,7 +35,7 @@ void	VirtualServ::root_var(const std::string& line, VirtualServ &serv)
 {
 
 	std::string	temp = get_value(line, alnum_path);
-	std::cout << "entering root- " << std::endl;
+	std::cerr << "entering root- " << std::endl;
 	check_directory_path(temp);
 	serv.set_root(temp);
 
@@ -53,12 +53,12 @@ void	VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
 {
 	std::string	temp = get_value(line, myascci);
 	if (temp.find("GET") != std::string::npos)
-		serv.accepted_protocol |= GET;
+		serv.default_route.set_methods(GET);
 	if (temp.find("POST") != std::string::npos)
-		serv.accepted_protocol |= POST;
+		serv.default_route.set_methods(POST);
 	if (temp.find("DELETE") != std::string::npos)
-		serv.accepted_protocol |= DELETE;
-	std::cout << "protocole : " << serv.accepted_protocol << std::endl;
+		serv.default_route.set_methods(DELETE);
+	std::cerr << "protocole : " << serv.accepted_protocol << std::endl;
 }
 
 std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()
@@ -100,7 +100,7 @@ VirtualServ::~VirtualServ()
 
 void	VirtualServ::set_default(const std::string& line)
 {
-	default_page = line;
+	this->default_route.set_default(line);
 }
 
 
@@ -121,7 +121,12 @@ void	VirtualServ::set_port(const std::string &name)
 
 void	VirtualServ::set_root(const std::string &root)
 {
-	this->root = root;
+	this->default_route.set_root(root);
+}
+
+const Route&	VirtualServ::get_default_route() const
+{
+	return (default_route);
 }
 
 std::string	VirtualServ::get_root() const

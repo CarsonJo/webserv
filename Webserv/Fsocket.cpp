@@ -6,7 +6,7 @@ Fsocket::Fsocket() : fd(-1), launched(0), my_info()
 
 }
 
-Fsocket::Fsocket(const Addrinfo& info) : launched(0), my_info(info)
+Fsocket::Fsocket(Addrinfo& info) : launched(0), my_info(info)
 {
 	fd = socket(my_info.get_family(), my_info.get_socktype() , my_info.get_protocol());
 	if (fd < 0)
@@ -15,9 +15,9 @@ Fsocket::Fsocket(const Addrinfo& info) : launched(0), my_info(info)
 		throw(std::exception());
 }
 
-Fsocket::Fsocket(const Fsocket& to_copy) : fd(to_copy.fd), launched(to_copy.launched), my_info(to_copy.my_info)
+Fsocket::Fsocket(Fsocket& to_copy) : fd(to_copy.fd), launched(to_copy.launched), my_info(to_copy.my_info)
 {
-
+	to_copy.fd = -1;
 }
 
 Fsocket::~Fsocket()
@@ -52,10 +52,11 @@ int	Fsocket::get_fd() const
 	return (fd);
 }
 
-void Fsocket::operator=(const Fsocket& to_copy)
+void Fsocket::operator=(Fsocket& to_copy)
 {
 	if (fd >= 0)
 		close(fd);
 	fd = to_copy.fd;
 	my_info = to_copy.my_info;
+	to_copy.fd = -1;
 }

@@ -5,7 +5,7 @@ ServerBlock::ServerBlock() :port("")
 
 }
 
-ServerBlock::ServerBlock(const Addrinfo& info) : socket_fd(info)
+ServerBlock::ServerBlock(Addrinfo& info) : socket_fd(info)
 {
 
 }
@@ -32,8 +32,12 @@ int	ServerBlock::accept_connect()
 
 void	ServerBlock::launch_serv()
 {
-	if (port.size() == 0)
+	if (port.size() == 0 || host.size() == 0)
 		throw(std::exception());
+	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port, host.c_str());
+	Fsocket		sock(test);
+
+	socket_fd = sock;
 	socket_fd.init_connect(1);
 }
 
@@ -66,10 +70,6 @@ std::string	ServerBlock::get_host() const
 
 void	ServerBlock::set_host(const std::string& temp)
 {
-	Addrinfo	test(AF_INET, SOCK_STREAM, 0, AI_PASSIVE, port, temp.c_str());
-	Fsocket		sock(test);
-
-	socket_fd = sock;
 	host = temp;
 }
 

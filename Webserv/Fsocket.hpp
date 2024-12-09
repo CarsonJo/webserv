@@ -26,10 +26,15 @@ class Fsocket
 		void	init_connect(const A& opt){
 			if (launched || fd < 0)
 				throw(std::exception());
-			setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(A));
+
+			if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(A)) < 0)
+			{
+				std::cerr << strerror(errno) << std::endl;
+				throw(std::exception());
+			}
 			if (bind(fd, my_info.get_addr(), my_info.get_addrlen()) < 0)
 			{
-				std::cout << strerror(errno) << std::endl;
+				std::cerr << strerror(errno) << std::endl;
 				throw(std::exception());
 			}
 			if (listen(fd, LISTEN))
@@ -37,9 +42,9 @@ class Fsocket
 			launched = 1;
 		};
 		Fsocket();
-		Fsocket(const Fsocket& to_copy);
-		Fsocket(const Addrinfo &info);
-		void	operator=(const Fsocket& to_copy);
+		Fsocket(Fsocket& to_copy);
+		Fsocket(Addrinfo &info);
+		void	operator=(Fsocket& to_copy);
 		~Fsocket();
 };
 #endif

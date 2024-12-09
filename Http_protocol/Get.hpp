@@ -2,6 +2,9 @@
 #define GET_HPP
 #include <string>
 #include "Request.hpp"
+#define CGI 1
+#define AUTOINDEX 2
+#define GETFILE 3
 
 class Request;
 
@@ -14,7 +17,11 @@ class Get : public Request
 		int	response(int fd);
 		std::string	type();
 	private :
-
+		int	send_file();
+		int	send_header();
+		//autoindex;
+		int	method;
+		std::fstream	file_to_send;
 };
 
 #endif

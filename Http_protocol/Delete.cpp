@@ -6,7 +6,7 @@ Delete::Delete() : Request()
 
 int	Delete::response(int fd)
 {
-	std::cout << "got a delete" << std::endl;
+	std::cerr << "got a delete" << std::endl;
 	if (!(serv->get_protocol() & DELETE))
 		return (Error::handle_error(fd, serv, "405", 405));
 	std::string	path = serv->get_root();

@@ -49,6 +49,86 @@ void	Request::set_serv(const VirtualServ* to_set)
 	serv = to_set;
 }
 
+void	Request::set_target(const std::string& str)
+{
+	target = str;
+}
+
+void	Request::set_upload(const std::string& str)
+{
+	upload = str;
+}
+
+void	Request::set_error(int fd, const VirtualServ *s, const std::string& str, int code)
+{
+	err.set_error(fd, s, str, code);
+}
+
+void	Request::add_env(const std::string& str, const std::string& value)
+{
+	cgi_env[str] = value;
+}
+
+void	Request::set_fd(int val)
+{
+	fd = val;
+}
+
+void	Request::set_route(const Route& str)
+{
+	route =str;
+}
+
+std::string	Request::get_location() const
+{
+	return (location);
+}
+
+std::string	Request::get_status() const
+{
+	return (status);
+}
+
+std::string	Request::get_content_length() const
+{
+	return (content_length);
+}
+
+std::string	Request::get_content_type() const
+{
+	return (content_type);
+}
+
+std::string	Request::get_protocole_version() const
+{
+	return (protocole_version);
+}
+
+std::string	Request::get_target() const
+{
+	return (target);
+}
+
+std::string	Request::get_upload() const
+{
+	return (upload);
+}
+
+const Route&	Request::get_route() const
+{
+	return (route);
+}
+
+int	Request::get_fd() const
+{
+	return (fd);
+}
+
+const VirtualServ*	Request::get_serv() const
+{
+	return (serv);
+}
+
 std::map<std::string, std::string>& Request::get_cgi_env()
 {
 	return (cgi_env);

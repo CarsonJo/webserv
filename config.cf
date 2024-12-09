@@ -1,15 +1,16 @@
 server{
 	server_name 	 	nom;
 	listen 				8080;
-	root /root/server1;
-	default	/root/server1/index.html;
+	root ./root/server1;
+	default	./root/server1/index.html;
 	protocol	GET POST;
-	host	127.0.0.1;
+	host	0.0.0.0;
 	{
-		location /test;
+		location /;
 		methods GET;
+		root ./root/server1;
 		autoindex on;
-		default /root/server1/index.html;
+		default ./root/server1/index.html;
 		cgi on;
 
 	}

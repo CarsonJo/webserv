@@ -12,7 +12,7 @@ class ServerBlock{
 	public :
 
 		ServerBlock();
-		ServerBlock(const Addrinfo& info);
+		ServerBlock(Addrinfo& info);
 		void											add(const VirtualServ& serv);
 		std::map<std::string, VirtualServ>::iterator	end();
 		VirtualServ*									find(const std::string& name, const std::string& t_port);

@@ -75,6 +75,26 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 	}
 }
 
+static void	resolve_path(Request *req, std::string path, const VirtualServ *serv,
+							const std::map<std::string, Route>& arr)
+{
+	std::map<std::string, Route>::const_iterator it = arr.find(path.c_str());
+	if (it != arr.end())
+	{
+		req->set_route(it->second);
+		std::cerr << "default : " << req->get_route().get_default() << std::endl;
+	}
+	else
+	{
+		std::size_t i = path.find_last_of('/');
+		if (i == std::string::npos)
+			req->set_route(serv->get_default_route());
+		else
+			resolve_path(req, path.substr(0, i), serv, arr);
+	}
+
+}
+
 Request* parsedRequest(int fd, ServerBlock *serv)
 {
 	Request*		ret;
@@ -89,24 +109,40 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 			throw(std::exception());
 		to_parsed = std::string(line);
 		end = to_parsed.find("\n");
-		std::cout << "request : " << to_parsed << std::endl;
+		std::cerr << "request : " << to_parsed << std::endl;
 		ret = checkRequest(next_word(to_parsed, pos));
-		if (ret->type() == "POST")
-			ret->is_cgi = 1;
-		ret->fd = fd;
-		ret->target = next_word(to_parsed, pos);
-		if (ret->target.find("?") != std::string::npos)
+		if (end == std::string::npos)
 		{
-			ret->cgi_env["QUERY_STRING="] = ret->target.substr(ret->target.find("?"));// decale de 1 pour ne pas inclure ?
-			ret->target = ret->target.substr(0, ret->target.find("?"));
+			ret->set_error(fd, 0, "400", 400);
+			return (ret);
 		}
-		ret->protocole_version = next_word(to_parsed, pos);
+		ret->set_fd(fd);
+		ret->set_target(next_word(to_parsed, pos));
+		if (ret->get_target().find("?") != std::string::npos)
+		{
+			ret->add_env("QUERY_STRING=", ret->get_target().substr(ret->get_target().find("?")));// decale de 1 pour ne pas inclure ?
+			ret->set_target(ret->get_target().substr(0, ret->get_target().find("?")));
+		}
+		ret->set_protocole_version(next_word(to_parsed, pos));
 		if (pos > end)
-			ret->err.set_error(fd, serv->get_default(), "405", 405);
-		std::cout << "protocole:" << ret->protocole_version << std::endl;
+			ret->set_error(fd, serv->get_default(), "405", 405);
+		std::cerr << "protocole:" << ret->get_protocole_version() << std::endl;
 		parsed_header(to_parsed, pos, ret, serv, fd);
+		if (ret->get_serv() == 0)
+		{
+			ret->set_error(fd, 0, "400", 400);
+			return (ret);
+		}
+		std::cerr << "PITIE :" << serv->unique()->get_routes().size() << serv->get_default()->get_routes().size() << std::endl;
+		if (ret->get_serv()->get_routes().size() == 0)
+			ret->set_route(ret->get_serv()->get_default_route());
+		else
+			resolve_path(ret, ret->get_target(), ret->get_serv(), ret->get_serv()->get_routes());
+		ret->set_target(ret->get_target()
+			.replace(0, ret->get_route().get_location().size(), ret->get_route().get_root()));
+		std::cerr << "TARGERTTTTTT" << ret->get_target() << std::endl;
 			// parsed_body(to_parsed, pos, ret, serv, fd);
-	}
+	}// probleme de route a regler
 	catch(const std::exception& e)
 	{
 		delete ret;

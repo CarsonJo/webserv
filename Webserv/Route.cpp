@@ -8,7 +8,7 @@ void Route::set_location(const std::string& loc) { location = loc; }
 void Route::set_root(const std::string& root) { this->root = root; }
 void Route::set_default(const std::string& default_page) { this->default_page = default_page; }
 void Route::set_autoindex(bool index) { autoindex = index; }
-void Route::set_methods(int methods) { allowed_methods = methods; }
+void Route::set_methods(int methods) { allowed_methods |= methods; }
 
 void Route::set_cgi(bool enabled) {
     cgi_enabled = enabled;
@@ -26,8 +26,8 @@ const std::string& Route::get_upload_path() const {
     return upload_path;
 }
 
-const std::string& Route::get_location() const { return location; }
-const std::string& Route::get_root() const { return root; }
+std::string Route::get_location() const { return location; }
+std::string Route::get_root() const { return root; }
 const std::string& Route::get_default() const { return default_page; }
 bool Route::is_autoindex() const { return autoindex; }
 int Route::get_methods() const { return allowed_methods; }
@@ -39,7 +39,7 @@ std::map<std::string, ParseFunction> Route::init_route_directives() {
     ret["root"] = Route::root_var;
     ret["autoindex"] = Route::autoindex_var;
     ret["methods"] = Route::methods_var;
-	ret["default"] = Route::methods_var;
+	ret["default"] = Route::default_var;
 	ret["cgi"] = Route::cgi_var;
     ret["upload_path"] = Route::upload_path_var;
 

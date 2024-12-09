@@ -34,6 +34,7 @@ static std::string	next_word(std::string& sub, std::size_t& i, const char* delim
 		ret = ret.substr(0, pos);
 		i += pos + start;
 	}
+	std::cerr << ret << std::endl;
 	return (ret);
 }
 
@@ -89,7 +90,9 @@ void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, Serv
 
 	if (end == std::string::npos)
 		throw(std::exception());
-	req->set_serv(serv->find(next_word(toRead, pos, " \t\r\n:"), next_word(toRead, pos, " \t\r\n")));
+	if (req->get_serv() != 0)
+		req->set_error(req->get_fd(), req->get_serv(), "400", 400);
+	req->set_serv(serv->find(next_word(toRead, pos, " \t\r\n:"), next_word(toRead, pos, " \t\r\n:")));
 }
 
 // void	Http_header::auth(Request *req, std::string& toRead, std::size_t& pos)
