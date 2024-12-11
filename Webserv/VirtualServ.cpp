@@ -121,6 +121,7 @@ void	VirtualServ::set_port(const std::string &name)
 void	VirtualServ::set_root(const std::string &root)
 {
 	this->default_route.set_root(root);
+	this->default_route.set_location("/");
 }
 
 const Route&	VirtualServ::get_default_route() const

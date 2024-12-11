@@ -147,7 +147,7 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		else
 			resolve_path(ret, ret->get_target(), ret->get_serv(), ret->get_serv()->get_routes());
 		ret->set_target(ret->get_target()
-			.replace(0, ret->get_route().get_location().size(), ret->get_route().get_root()));
+			.replace(0, ret->get_route().get_location().size(), ret->get_route().get_root().append("/")));
 		std::cerr << "TARGERTTTTTT" << ret->get_target() << std::endl;
 			// parsed_body(to_parsed, pos, ret, serv, fd);
 	}// probleme de route a regler
