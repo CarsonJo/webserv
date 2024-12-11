@@ -46,12 +46,14 @@ class Request
 		std::string							get_target() const;
 		std::string							get_upload() const;
 		std::string							get_auth() const;
+		std::string							get_url() const;
 		const std::string&					get_body() const;
 		const Route&						get_route() const;
 		int									get_fd() const;
 		const VirtualServ*					get_serv() const;
 
 
+		void								set_url(const std::string& str);
 		void								set_route(const Route& route);
 		void								set_fd(int val);
 		void								set_body(const std::string& str);
@@ -78,6 +80,7 @@ class Request
 		std::string								content_length;
 		std::string								content_type;
 		std::string								target;
+		std::string								url;
 		std::string								auth;
 		std::string								upload;
 		std::string								body;

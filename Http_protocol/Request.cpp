@@ -45,6 +45,11 @@ void	Request::set_status(const std::string& str)
 	status = str;
 }
 
+void	Request::set_url(const std::string& str)
+{
+	url = str;
+}
+
 void	Request::set_location(const std::string& str)
 {
 	location = str;
@@ -108,6 +113,11 @@ std::string	Request::get_content_length() const
 const std::string&	Request::get_body() const
 {
 	return (body);
+}
+
+std::string	Request::get_url() const
+{
+	return (url);
 }
 
 std::string	Request::get_content_type() const

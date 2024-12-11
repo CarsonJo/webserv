@@ -112,8 +112,10 @@ int	Get::response(int fd)
 			if (route.get_default().size() > 0)
 			{
 				method = GETFILE;
-				target = route.get_default();
-				std::cerr << target << std::endl;
+				target.append(route.get_default());
+				if (access(target.c_str(), F_OK | R_OK) < 0)
+					return	(Error::handle_error(fd, serv, "404", 404));
+				std::cerr << "New target : " << target << std::endl;
 				return (send_header());
 			}
 			else if (route.is_autoindex())

@@ -6,11 +6,11 @@ server{
 	protocol	GET POST;
 	host	0.0.0.0;
 	{
-		location /;
+		location /test/;
 		methods GET;
 		root ./root/server1/;
+		default	index.html;
 		autoindex on;
-		cgi o;
-
+		cgi on;
 	}
 }

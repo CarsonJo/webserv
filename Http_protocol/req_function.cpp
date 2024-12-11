@@ -70,7 +70,7 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 		return (0);
 	}
 }
-
+//a refaire
 static void	resolve_path(Request *req, std::string path, const VirtualServ *serv,
 							const std::map<std::string, Route>& arr)
 {
@@ -84,12 +84,19 @@ static void	resolve_path(Request *req, std::string path, const VirtualServ *serv
 	else
 	{
 		std::size_t i = path.find_last_of('/');
-		if (i == std::string::npos)
+		if (i == std::string::npos || (i == 0 && path.size() == 1))
 			req->set_route(serv->get_default_route());
-		else if (i == 0)
-			resolve_path(req, path.substr(0, i + 1), serv, arr);
+		else if (i == path.size() - 1)
+		{
+			path.erase(i);
+			i = path.find_last_of('/');
+			if (i == std::string::npos)
+				req->set_route(serv->get_default_route());
+			else
+				resolve_path(req, path.substr(0, i + 1), serv, arr);
+		}
 		else
-			resolve_path(req, path.substr(0, i), serv, arr);
+			resolve_path(req, path.substr(0, i + 1), serv, arr);
 	}
 
 }
@@ -117,6 +124,7 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		}
 		ret->set_fd(fd);
 		ret->set_target(next_word(to_parsed, pos));
+		ret->set_url(ret->get_target());
 		if (ret->get_target().find("?") != std::string::npos)
 		{
 			ret->add_env("QUERY_STRING=", ret->get_target().substr(ret->get_target().find("?")));// decale de 1 pour ne pas inclure ?

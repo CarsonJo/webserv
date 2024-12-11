@@ -60,7 +60,6 @@ void Route::root_var(const std::string& line, Route& route) {
 void Route::default_var(const std::string& line, Route& route) {
 
 		std::string	temp = get_value(line, myascci);
-		check_file_path(temp);
 		route.set_default(temp);
 
 }
