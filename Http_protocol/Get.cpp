@@ -113,9 +113,9 @@ int	Get::response(int fd)
 			{
 				method = GETFILE;
 				target.append(route.get_default());
-				if (access(target.c_str(), F_OK | R_OK) < 0)
-					return	(Error::handle_error(fd, serv, "404", 404));
 				std::cerr << "New target : " << target << std::endl;
+				if (access(target.c_str(), F_OK | R_OK) < 0)
+					return	(Error::handle_error(fd, serv, "403", 403));
 				return (send_header());
 			}
 			else if (route.is_autoindex())

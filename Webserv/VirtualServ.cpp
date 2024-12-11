@@ -44,7 +44,6 @@ void	VirtualServ::root_var(const std::string& line, VirtualServ &serv)
 void	VirtualServ::default_var(const std::string& line, VirtualServ& serv)
 {
 	std::string	temp = get_value(line, myascci);
-		check_file_path(temp);
 		serv.set_default(temp);
 
 }
