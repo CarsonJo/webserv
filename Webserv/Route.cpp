@@ -1,7 +1,7 @@
 #include "Route.hpp"
 std::map<std::string, ParseFunction> Route::route_directives = Route::init_route_directives();
 
-Route::Route() : autoindex(false), allowed_methods(0), cgi_enabled(false) {}
+Route::Route() : default_page(""), autoindex(false), allowed_methods(0),  cgi_enabled(false) {}
 Route::~Route() {}
 
 void Route::set_location(const std::string& loc) { location = loc; }

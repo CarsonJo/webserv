@@ -71,7 +71,7 @@ void	Webserv::erase(int fd)
 void	Webserv::new_connect(int &event)
 {
 	int			fd;
-	
+
 	for (int i = 0; i < master_socket && event > 0; i++)
 	{
 		if (arr[i].revents == POLLIN)

@@ -11,12 +11,18 @@ const char *Test::what() const throw()
 Request::Request() : protocole_version(""), content_length(""),  content_type(""), target(""), first(0)
 , serv(0)
 {
-
+	for (int i = 0; i < 8192; i++)
+		buff[i] = 0;
 }
 
 Request::~Request()
 {
 
+}
+
+void	Request::set_auth(const std::string& str)
+{
+	auth = str;
 }
 
 void	Request::set_content_length(const std::string& str)
@@ -52,6 +58,11 @@ void	Request::set_serv(const VirtualServ* to_set)
 void	Request::set_target(const std::string& str)
 {
 	target = str;
+}
+
+void	Request::set_body(const std::string& str)
+{
+	body = str;
 }
 
 void	Request::set_upload(const std::string& str)
@@ -94,6 +105,11 @@ std::string	Request::get_content_length() const
 	return (content_length);
 }
 
+const std::string&	Request::get_body() const
+{
+	return (body);
+}
+
 std::string	Request::get_content_type() const
 {
 	return (content_type);
@@ -112,6 +128,11 @@ std::string	Request::get_target() const
 std::string	Request::get_upload() const
 {
 	return (upload);
+}
+
+std::string	Request::get_auth() const
+{
+	return (auth);
 }
 
 const Route&	Request::get_route() const

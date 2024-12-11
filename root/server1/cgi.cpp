@@ -2,9 +2,7 @@
 #include <stdio.h>
 int main(int argc, char **argv, char **envp)
 {
-	printf ("<html>\n<body>\n");
-  	printf ("<h2>Hello world!</h2>\n");
-  	printf ("<p>Your CGI bin is set up properly</p>\n");
-	 printf ("</body>\n</html>\n");
+	printf("<!DOCTYPE html>\n<html>\n<body>\n\n<h1>My First Heading</h1>\n<p>My first paragraph.</p>\n\n</body>\n</html>");
+
 	return (0);
 }

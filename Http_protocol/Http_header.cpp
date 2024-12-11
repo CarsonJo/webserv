@@ -95,7 +95,25 @@ void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, Serv
 	req->set_serv(serv->find(next_word(toRead, pos, " \t\r\n:"), next_word(toRead, pos, " \t\r\n:")));
 }
 
-// void	Http_header::auth(Request *req, std::string& toRead, std::size_t& pos)
-// {
+void	Http_header::authorization(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)
+{
+	(void)serv;
+	std::string	temp = toRead.substr(pos);
+	std::size_t	end = temp.find("\n");
+	std::size_t	new_line =  temp.find("\n ");
+	std::size_t	final_pos = 0;
 
-// }
+
+	if (end == std::string::npos)
+		throw(std::exception());
+	while (new_line == end && new_line != std::string::npos)
+	{
+		final_pos += end;
+		temp = temp.substr(end);
+		new_line = temp.find("\n ");
+		end = temp.find("\n");
+	}
+	if (final_pos == 0)
+		final_pos = end;
+	req->set_auth(toRead.substr(pos, final_pos));
+}

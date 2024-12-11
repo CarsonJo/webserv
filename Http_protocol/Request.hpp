@@ -45,6 +45,8 @@ class Request
 		std::string							get_content_length() const;
 		std::string							get_target() const;
 		std::string							get_upload() const;
+		std::string							get_auth() const;
+		const std::string&					get_body() const;
 		const Route&						get_route() const;
 		int									get_fd() const;
 		const VirtualServ*					get_serv() const;
@@ -52,21 +54,19 @@ class Request
 
 		void								set_route(const Route& route);
 		void								set_fd(int val);
+		void								set_body(const std::string& str);
 		void								set_location(const std::string& str);
 		void								set_status(const std::string& str);
 		void								set_protocole_version(const std::string& str);
 		void								set_content_length(const std::string& str);
 		void								set_content_type(const std::string& str);
 		void								set_target(const std::string& str);
+		void								set_auth(const std::string& str);
 		void								set_upload(const std::string& str);
 		void								set_serv(const VirtualServ* to_set);
 		void								set_error(int fd, const VirtualServ *s, const std::string& str, int code);
 		void								add_env(const std::string& str, const std::string& value);
 		std::map<std::string, std::string>&	get_cgi_env();
-		friend Request* 		checkRequest(const std::string& temp);
-		friend int				parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
-		friend std::string		parse_response(char *buff, Request* req);
-		friend void				parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
 	protected:
 
 		int						fd;
@@ -78,7 +78,10 @@ class Request
 		std::string								content_length;
 		std::string								content_type;
 		std::string								target;
+		std::string								auth;
 		std::string								upload;
+		std::string								body;
+		std::string								cgi_response;
 		bool									first;
 		char									buff[8192];
 		Error									err;

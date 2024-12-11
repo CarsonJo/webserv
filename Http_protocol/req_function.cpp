@@ -33,14 +33,10 @@ static std::string	next_word(std::string& sub, std::size_t& i)
 	return (ret);
 }
 
-// void	parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd)
-// {
-// 	(void)serv;
-// 	(void)fd;
-// 	ret->body = to_parsed.substr(pos);
-// 	if (std::atoi(ret->content_length.c_str()) < ret->body.size()) //double utilisation atoi utiliser variable
-// 		ret->body = ret->body.substr(0, std::atoi(ret->content_length.c_str()));
-// }
+void	parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret)
+{
+	ret->set_body(to_parsed.substr(pos));
+}
 
 int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd)
 {
@@ -78,6 +74,7 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 static void	resolve_path(Request *req, std::string path, const VirtualServ *serv,
 							const std::map<std::string, Route>& arr)
 {
+	std::cout << "PATH: " << path <<std::endl;
 	std::map<std::string, Route>::const_iterator it = arr.find(path.c_str());
 	if (it != arr.end())
 	{
@@ -89,6 +86,8 @@ static void	resolve_path(Request *req, std::string path, const VirtualServ *serv
 		std::size_t i = path.find_last_of('/');
 		if (i == std::string::npos)
 			req->set_route(serv->get_default_route());
+		else if (i == 0)
+			resolve_path(req, path.substr(0, i + 1), serv, arr);
 		else
 			resolve_path(req, path.substr(0, i), serv, arr);
 	}
@@ -128,6 +127,7 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 			ret->set_error(fd, serv->get_default(), "405", 405);
 		std::cerr << "protocole:" << ret->get_protocole_version() << std::endl;
 		parsed_header(to_parsed, pos, ret, serv, fd);
+		ret->set_body(to_parsed.substr(pos));
 		if (ret->get_serv() == 0)
 		{
 			ret->set_error(fd, 0, "400", 400);

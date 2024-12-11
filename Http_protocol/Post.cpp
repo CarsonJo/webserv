@@ -5,54 +5,6 @@ Post::Post() : Request()
 
 }
 
-// static void	set_up_child(int *read, int *write)
-// {
-// 	if (pipe(read) == -1)
-// 		throw(std::exception());
-// 	if (pipe(write) == -1)
-// 	{
-// 		close(read[0]);
-// 		close(read[1]);
-// 		throw(std::exception());
-// 	}
-// }
-
-// static void stcpy(char *a, const char *b, int size)
-// {
-// 	int i = 0;
-
-// 	while (i < size && b[i])
-// 	{
-// 		a[i] = b[i];
-// 		i++;
-// 	}
-// }
-
-// static void	set_my_env(char **envp, std::map<std::string, std::string>& env)
-// {
-// 	std::map<std::string, std::string>::iterator it = env.begin();
-// 	envp = new char*[20];
-// 	for (int i = 0; i < 20; i++)
-// 		envp[i] = new char[200];
-// 	for (int i = 0; i < 20 && it != env.end(); i++,it++)
-// 		stcpy(envp[i], (it->first + it->second).c_str(), 200);
-// }
-
-// std::string	Request::parse_response(char *buff, Request *req)
-// {
-// 	std::string	buff2 = buff;
-// 	std::size_t	pos = 0;
-
-// 	try
-// 	{
-// 		while(1)
-// 		{
-// 			if (next_word_cgi(buff2, pos) == "Location:")
-// 				req->location = next_word_cgi(buff2, pos);
-// 		}
-// 	}
-// }
-
 int	Post::response(int fd)
 {
 	// if (err)

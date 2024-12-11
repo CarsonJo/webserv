@@ -7,7 +7,7 @@ int main()
 	int			a = 0;
 
 	parse_config("config.cf", poll_test);
-
+	signal(SIGPIPE, SIG_IGN);
 	try
 	{
 		while (1)
