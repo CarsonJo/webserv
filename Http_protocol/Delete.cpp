@@ -47,7 +47,7 @@ int Delete::response(int fd)
         return Error::handle_error(fd, serv, "403", 403); // Check si 403 exist
     }
 
-    // Respond with 204 No Content on successful deletion
+    
     std::string response = "HTTP/1.1 204 No Content\r\n";
     response.append(Date().get_date()).append("\r\n\r\n");
 
