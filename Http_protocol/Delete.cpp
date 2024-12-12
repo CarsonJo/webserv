@@ -22,8 +22,14 @@ int Delete::response(int fd)
         return err.trap_card_activate();
 
 	//verifier si la methode est autorisee
-    if (!(route.get_methods() & DELETE))
+     if (!(route.get_methods() & DELETE))
+	{
         return Error::handle_error(fd, serv, "405", 405); 
+	}
+	if (!(serv->get_protocol() & DELETE))
+	{
+        return Error::handle_error(fd, serv, "405", 405); 
+	}
 
     
     if (is_directory(target))
