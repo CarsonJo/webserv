@@ -31,3 +31,8 @@ Delete::~Delete()
 {
 
 }
+
+int Delete::type_code()
+{
+	return (DELETE);
+}

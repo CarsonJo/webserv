@@ -10,6 +10,12 @@
 # include <iostream>
 # include "Addrinfo.hpp"
 # define LISTEN 100
+
+// typedef union {
+// 	struct sockaddr		addr;
+// 	struct sockaddr_in	addr_in;
+// }	u_sock;
+
 class Fsocket
 {
 	private:

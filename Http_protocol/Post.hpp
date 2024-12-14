@@ -4,7 +4,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "Request.hpp"
-
+#define CGI 1
+#define AUTOINDEX 2
+#define GETFILE 3
+#define UPLOAD 4
 class Request;
 
 class Post : public Request
@@ -14,8 +17,11 @@ class Post : public Request
 		Post(const std::string& target);
 		~Post();
 		int	response(int fd);
-		virtual std::string	type();
+		std::string	type();
+		int	type_code();
 	private :
+
+		int method;
 
 };
 

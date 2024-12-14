@@ -11,7 +11,8 @@ class Delete : public Request
 		Delete(const std::string& target);
 		~Delete();
 		int		response(int fd);
-		virtual std::string	type();
+		std::string	type();
+		int	type_code();
 	private :
 
 };

@@ -31,9 +31,11 @@ int	Fsocket::accept_connect()
 	if (!launched)
 		throw(std::exception());
 	int			ret;
-	socklen_t	sock = my_info.get_addrlen();
+	// socklen_t	sock;
+	// u_sock		addr;
 
-	ret = accept(fd, my_info.get_addr(), &sock);
+	ret = accept(fd, 0, 0);
+
 	return (ret);
 }
 
