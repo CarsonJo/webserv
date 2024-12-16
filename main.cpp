@@ -4,20 +4,20 @@ int main()
 {
 	Webserv		poll_test;
 	int			err = 0;
-	int			a = 0;
+	//int			a = 0;
 
 	parse_config("config.cf", poll_test);
-
+	signal(SIGPIPE, SIG_IGN);
 	try
 	{
 		while (1)
 		{
 			if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 0)) > 0)
 			{
-				std::cout << "enter" << std::endl;
+				std::cerr << "enter" << std::endl;
 				poll_test.new_connect(err);
 				poll_test.handle_recv(err);
-				a++;
+				//a++;
 			}
 		}
 	}

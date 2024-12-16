@@ -8,7 +8,7 @@ std::map<std::string, Parsed_header> make_header_func()
 	ret["Content-Length:"] = Http_header::content_length;
 	ret["Location:"] = Http_header::location;
 	ret["Status:"] = Http_header::status;
-	// ret["Authorization"] = Http_header::authorization;
+	ret["Authorization"] = Http_header::authorization;
 	ret["Host:"] = Http_header::host;
 	return (ret);
 }
@@ -68,7 +68,14 @@ void	Http_header::content_type(Request *req, std::string& toRead, std::size_t& p
 
 	if (end == std::string::npos)
 		throw(std::exception());
-	req->set_content_type(next_word(toRead, pos, " \t\r\n"));
+	req->set_content_type(next_word(toRead, pos, " \t\r\n;"));
+	std::cout << "content type = " << req->get_content_type() << std::endl;
+	if (req->get_content_type() == "multipart/form-data")
+	{
+		next_word(toRead, pos, " \r\n\t=;");
+		req->set_boundary(next_word(toRead, pos, "\" \r\n\t="));
+		std::cout << "boundary :" << req->get_boundary() << std::endl;
+	}
 }
 
 void	Http_header::status(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv)

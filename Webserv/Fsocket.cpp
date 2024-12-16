@@ -5,18 +5,19 @@ Fsocket::Fsocket() : fd(-1), launched(0), my_info()
 {
 
 }
-Fsocket::Fsocket(const Addrinfo& info) : launched(0), my_info(info)
+
+Fsocket::Fsocket(Addrinfo& info) : launched(0), my_info(info)
 {
-	fd = socket(info.get_family(), info.get_socktype() , info.get_protocol());
+	fd = socket(my_info.get_family(), my_info.get_socktype() , my_info.get_protocol());
 	if (fd < 0)
 		throw(std::exception());
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		throw(std::exception());
 }
 
-Fsocket::Fsocket(const Fsocket& to_copy) : fd(to_copy.fd), launched(to_copy.launched), my_info(to_copy.my_info)
+Fsocket::Fsocket(Fsocket& to_copy) : fd(to_copy.fd), launched(to_copy.launched), my_info(to_copy.my_info)
 {
-
+	to_copy.fd = -1;
 }
 
 Fsocket::~Fsocket()
@@ -30,9 +31,11 @@ int	Fsocket::accept_connect()
 	if (!launched)
 		throw(std::exception());
 	int			ret;
-	socklen_t	sock = my_info.get_addrlen();
+	// socklen_t	sock;
+	// u_sock		addr;
 
-	ret = accept(fd, my_info.get_addr(), &sock);
+	ret = accept(fd, 0, 0);
+
 	return (ret);
 }
 
@@ -41,25 +44,21 @@ void	Fsocket::set_fd(int temp)
 	fd = temp;
 }
 
-int	Fsocket::get_fd() const
-{
-	return (fd);
-}
-
 void	Fsocket::set_launched(bool val)
 {
 	launched = val;
 }
 
-void Fsocket::operator=(const Fsocket& to_copy)
+int	Fsocket::get_fd() const
+{
+	return (fd);
+}
+
+void Fsocket::operator=(Fsocket& to_copy)
 {
 	if (fd >= 0)
 		close(fd);
 	fd = to_copy.fd;
 	my_info = to_copy.my_info;
-	fd = socket(my_info.get_family(), my_info.get_socktype() , my_info.get_protocol());
-	if (fd < 0)
-		throw(std::exception());
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-		throw(std::exception());
+	to_copy.fd = -1;
 }

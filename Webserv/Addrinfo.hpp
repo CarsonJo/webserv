@@ -12,8 +12,8 @@ class Addrinfo
 	public :
 
 		Addrinfo();
-		Addrinfo(int family, int socktype, int protocol, int flags, const std::string &port);
-		Addrinfo(const Addrinfo& to_copy);
+		Addrinfo(int family, int socktype, int protocol, int flags, const std::string &port, const char *ip);
+		Addrinfo(Addrinfo& to_copy);
 		~Addrinfo();
 		int						get_family() const;
 		int						get_protocol() const;
@@ -22,12 +22,13 @@ class Addrinfo
 		struct sockaddr*		get_addr();
 		socklen_t				get_addrlen() const;
 		std::string				get_port() const;
-		void	operator=(const Addrinfo& to_copy);
+		void	operator=(Addrinfo& to_copy);
 
 	private :
 		struct addrinfo	hints;
 		struct addrinfo	*res;
 		std::string		port;
+		std::string		ip;
 };
 
 #endif

@@ -4,6 +4,13 @@ SRC =	main.cpp\
 		Webserv/Fsocket.cpp\
 		Webserv/VirtualServ.cpp\
 		Webserv/ServerBlock.cpp\
+		Webserv/Route.cpp\
+		Webserv/lib_function.cpp\
+		Http_protocol/Post.cpp\
+		Http_protocol/Get.cpp\
+		Http_protocol/Delete.cpp\
+		Http_protocol/Http_header.cpp\
+		Http_protocol/req_function.cpp\
 		Http_protocol/Request.cpp\
 		Http_protocol/Date.cpp\
 		Http_protocol/Error.cpp\

@@ -1,9 +1,18 @@
 #include "Request.hpp"
 
-Request::Request() : target(""), protocole_version(""), content_type(""), content_length(""), first(0)
+std::map<std::string, Parsed_header> make_header_func();
+
+
+const char *Test::what() const throw()
+{
+	return ("test");
+}
+//verifier tous les fields
+Request::Request() : protocole_version(""), content_length(""),  content_type(""), target(""), first(0)
 , serv(0)
 {
-
+	for (int i = 0; i < 8192; i++)
+		buff[i] = 0;
 }
 
 Request::~Request()
@@ -11,30 +20,268 @@ Request::~Request()
 
 }
 
-Request* Request::checkRequest(const std::string& temp)
+void	Request::set_auth(const std::string& str)
 {
-	if (temp == "GET")
-		return (new Get());
-	else if (temp == "POST")
-		return (new Post());
-	else if (temp == "DELETE")
-		return (new Delete());
-	throw(std::exception());
+	auth = str;
 }
 
-std::string	next_word(std::string& sub, std::size_t& i)
+void	Request::set_content_length(const std::string& str)
+{
+	content_length = str;
+	int_content_length = std::atoi(str.c_str());
+}
+
+void	Request::set_content_type(const std::string& str)
+{
+	content_type = str;
+}
+
+void	Request::set_protocole_version(const std::string& str)
+{
+	protocole_version = str;
+}
+
+void	Request::set_status(const std::string& str)
+{
+	status = str;
+}
+
+void	Request::set_url(const std::string& str)
+{
+	url = str;
+}
+
+void	Request::set_location(const std::string& str)
+{
+	location = str;
+}
+
+void	Request::set_serv(const VirtualServ* to_set)
+{
+	serv = to_set;
+}
+
+void	Request::set_target(const std::string& str)
+{
+	target = str;
+}
+
+void	Request::set_body(const std::string& str)
+{
+	body = str;
+}
+
+void	Request::set_boundary(const std::string& str)
+{
+	boundary = str;
+}
+
+void	Request::set_upload(const std::string& str)
+{
+	upload = str;
+}
+
+void	Request::set_error(int fd, const VirtualServ *s, const std::string& str, int code)
+{
+	err.set_error(fd, s, str, code);
+}
+
+void	Request::add_env(const std::string& str, const std::string& value)
+{
+	cgi_env[str] = value;
+}
+
+void	Request::set_fd(int val)
+{
+	fd = val;
+}
+
+void	Request::set_route(const Route& str)
+{
+	route =str;
+}
+
+std::string	Request::get_location() const
+{
+	return (location);
+}
+
+std::string	Request::get_status() const
+{
+	return (status);
+}
+
+std::string	Request::get_content_length() const
+{
+	return (content_length);
+}
+
+const std::string&	Request::get_body() const
+{
+	return (body);
+}
+
+std::string	Request::get_url() const
+{
+	return (url);
+}
+
+std::string	Request::get_content_type() const
+{
+	return (content_type);
+}
+
+std::string	Request::get_protocole_version() const
+{
+	return (protocole_version);
+}
+
+std::string	Request::get_boundary() const
+{
+	return (boundary);
+}
+
+std::string	Request::get_target() const
+{
+	return (target);
+}
+
+std::string	Request::get_upload() const
+{
+	return (upload);
+}
+
+std::string	Request::get_auth() const
+{
+	return (auth);
+}
+
+const Route&	Request::get_route() const
+{
+	return (route);
+}
+
+std::size_t	Request::get_int_content_length() const
+{
+	return (int_content_length);
+}
+
+int	Request::get_fd() const
+{
+	return (fd);
+}
+
+const VirtualServ*	Request::get_serv() const
+{
+	return (serv);
+}
+
+std::map<std::string, std::string>& Request::get_cgi_env()
+{
+	return (cgi_env);
+}
+
+//CGIIIIIIII
+
+static void	set_up_child(int *read, int *write)
+{
+	if (pipe(read) == -1)
+		throw(std::exception());
+	if (pipe(write) == -1)
+	{
+		close(read[0]);
+		close(read[1]);
+		throw(std::exception());
+	}
+}
+
+static void stcpy(char *a, const char *b, int size)
+{
+	int i = 0;
+
+	while (i < size && b[i])
+	{
+		a[i] = b[i];
+		i++;
+	}
+}
+
+static void	set_my_env(char **envp, std::map<std::string, std::string>& env)
+{
+	std::map<std::string, std::string>::iterator it = env.begin();
+	envp = new char*[20];
+	for (int i = 0; i < 20; i++)
+		envp[i] = new char[200];
+	for (int i = 0; i < 20 && it != env.end(); i++,it++)
+		stcpy(envp[i], (it->first + it->second).c_str(), 200);
+}
+
+void	Request::set_var_env()
+{
+		cgi_env["SERVER_PROTOCOLE="] = PROTOCOLE;
+		cgi_env["GATEWAY_INTERFACE="] = GATEWAY;
+		cgi_env["REMOTE_HOST="] = "";
+		cgi_env["REMOTE_ADDR="] = "";
+		cgi_env["REQUEST_METHOD="] = this->type();
+		cgi_env["SERVER_NAME="] = serv->get_name();
+		cgi_env["SCRIPT_NAME="] = target;
+		cgi_env["CONTENT_TYPE="] = content_type;
+		cgi_env["CONTENT_LENGTH="] = content_length;
+		cgi_env["SERVER_PORT="] = serv->get_port();
+		cgi_env["SERVER_NAME="] = serv->get_name();
+		cgi_env["PATH_INFO="] = target;
+}
+
+int Request::set_up_cgi(int fd)
+{
+	std::cout << "TARGET CGI: " << target << std::endl;
+	set_up_child(&p_read[0], &p_write[0]);
+	set_var_env();
+	if (access(target.c_str(), F_OK | X_OK) != 0)
+		return (Error::handle_error(fd, serv, "404", 404));
+	if (int_content_length > body.size())
+		write(p_write[1], body.c_str(), body.size());
+	else
+		write(p_write[1], body.c_str(), int_content_length);
+	pid = fork();
+
+	if (pid == -1)
+		return (Error::handle_error(fd, serv, "405", 405));
+	if (!pid)
+	{
+		char **envp = 0;
+		if (dup2(p_write[0], 0) == -1)
+			std::exit(0);
+		if (dup2(p_read[1], 1) == -1)
+			std::exit(0);
+		set_my_env(envp, cgi_env);
+		if (execve(target.c_str(), envp, envp) == -1)
+			std::exit(0);
+	}
+	else
+	{
+		children = 1;
+		close(p_write[0]);
+		if (fcntl(p_read[0], F_SETFL, O_NONBLOCK) < 0)
+			throw(std::exception());
+		close(p_write[1]);
+	}
+	return (0);
+}
+
+static std::string	next_word(std::string& sub, std::size_t& i) // le mettre dans req_function
 {
 	std::string	ret = sub.substr(i);
-	std::size_t start = ret.find_first_not_of(" \t\n");
+	std::size_t start = ret.find_first_not_of(" \t\r\n");
 	if (start == std::string::npos)
-		throw(std::exception());
+		throw std::exception();
 	ret = ret.substr(start);
-	std::size_t	pos = ret.find_first_of(" \t\n");
+	std::size_t	pos = ret.find_first_of(" \t\r\n");
 
 	if (pos == std::string::npos)
 	{
 		ret = ret.substr(0);
-		throw(std::exception());
+		throw std::exception();
 	}
 	else
 	{
@@ -44,205 +291,49 @@ std::string	next_word(std::string& sub, std::size_t& i)
 	return (ret);
 }
 
-void	Request::parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv)
+void	Request::cgi_header()
 {
-	try
+	std::string	header = buff;
+	std::size_t	pos = header.find("Status:");
+	std::size_t	temp = pos;
+	std::string code = "200";
+
+	if (pos != std::string::npos)
 	{
-		std::string	test;
-		while (1)
-		{
-			if (pos == std::string::npos)
-				return ;
-			test = next_word(to_parsed, pos);
-			if (test == "Host:")
-			{
-				ret->serv = serv->find(next_word(to_parsed, pos));
-				if (ret->serv == 0)
-					ret->serv  = serv->unique();
-			}
-			else
-				pos += to_parsed.substr(pos).find_first_of("\n");
-		}
-	}
-	catch(const std::exception& e)
-	{
-		return ;
-	}
-
-}
-
-Request* Request::parsedRequest(int fd, ServerBlock *serv)
-{
-	Request*		ret;
-	char			line[8096] = {0};
-	std::string		to_parsed;
-	std::size_t		pos = 0;
-
-	(void)serv;
-	ret = 0;
-	try
-	{
-		if (read(fd, &line[0], 8096) == -1)
-			throw(std::exception());
-		to_parsed = std::string(line);
-		std::cout << "request : " << to_parsed << std::endl;
-		ret = checkRequest(next_word(to_parsed, pos));
-		ret->target = next_word(to_parsed, pos);
-		if (ret->target == "/")
-			ret->target = "/index.html";
-		std::cout << "target :" << ret->target << std::endl;
-		if (ret->target.find(".jpg") != std::string::npos)
-			ret->content_type = "image/jpeg\r\n";
-		else if (ret->target.find(".js") != std::string::npos)
-			ret->content_type = "text/javascript;\r\n";
-		else if (ret->target.find(".png") != std::string::npos)
-			ret->content_type = "image/png\r\n";
-		else if (ret->target.find(".css") != std::string::npos)
-			ret->content_type = "text/css\r\n";
-		// else if (ret->target.find(".ico") != std::string::npos)
-		// 	std::cout << "WTFFFFFFFFFFFFFF : " << ret->target << ": WTFVVVVVVVVVVVVVVVV2 : " << serv->get_root().append(ret->target) << std::endl;
-		else
-			ret->content_type = "text/html\r\n";
-		std::cout << "content_type: " << ret->content_type << std::endl;
-		ret->protocole_version = next_word(to_parsed, pos);
-		std::cout << "protocole:" << ret->protocole_version << std::endl;
-		parsed_header(to_parsed, pos, ret, serv);
-		// f.close();
-	}
-	catch(const std::exception& e)
-	{
-		delete ret;
-		throw(e);
-	}
-	return (ret);
-}
-
-int	Request::handle_error(int fd, const VirtualServ* server, std::string error_code, int error)
-{
-	std::string header;
-
-	header.append("HTTP/1.1 ").append(error_code).append(Error::get_error(error, server));
-	std::cout << "ERROR: " << header << std::endl;
-	write(fd, header.c_str(), header.size());
-	return (CLOSE);
-}
-
-/////////////////////////GET///////////////////////////////////////////////////
-Get::Get(): Request()
-{
-
-}
-
-Get::~Get()
-{
-
-}
-
-static std::string find_file_size(std::fstream& file)
-{
-	file.seekg(0, file.beg);
-	std::ifstream::pos_type begin = file.tellg();
-	file.seekg(0, file.end);
-	std::stringstream	stream;
-	stream << (static_cast<long>(file.tellg() - begin));
-	file.seekg(0, file.beg);
-	return (stream.str());
-}
-
-
-bool	Get::response(int fd)
-{
-	if (serv == 0)
-		return (handle_error(fd, serv, "403", 403));
-	std::string	path = serv->get_root();
-
-	if (!first)
-	{
-		if (!(serv->get_protocol() & GET))
-			return (handle_error(fd, serv, "405", 405));
-		Date a;
-		path.append(target);
-		std::cout << path << std::endl;
-		if (access(path.c_str(),F_OK | R_OK))
-			return (handle_error(fd, serv, "404", 404));
-		file_to_send.open(path.c_str(), std::fstream::in);
-		if (!file_to_send.is_open())
-			throw(std::exception());
-		content_length = find_file_size(file_to_send);
-		content_length.append("\r\n");
-		std::cout << "content_length: " << content_length << std::endl;
-		header = "HTTP/1.1 200 OK\r\n";
-		header.append("Content-Type: ").append(content_type).append("Content-Length: ").append(content_length)
-		.append(a.get_date()).append("\r\n");
-		write(fd, header.c_str(), header.size());
-		first = 1;
-		return (0);
+		code = next_word(header, pos);
+		cgi_response.append("HTTP/1.1 ").append(code).append("\n");
+		cgi_response.append(header.substr(0, temp)).append(header.substr(pos));
+		std::cout << "Size1 : " << cgi_response.size() << std::endl;
+		write(fd, cgi_response.c_str(), cgi_response.size());
 	}
 	else
 	{
-		file_to_send.read(&buff[0], 8192);
-		int a = file_to_send.gcount();
-		int b = write(fd, buff, file_to_send.gcount());
-		(void) a;
-		(void) b;
-		if (file_to_send.gcount() < 8192)
-		{
-			first = 0;
-			file_to_send.close();
-			return (1);
-		}
-		return (0);
+		cgi_response.append("HTTP/1.1 200 OK\n");
+		cgi_response.append(header);
+		std::cout << "Size2 : " << cgi_response.size() << std::endl;
+		write(fd, cgi_response.c_str(), cgi_response.size());
 	}
+}
+
+int	Request::cgi_handler(int fd)
+{
+	int	status;
+
+	int size = read(p_read[0], &buff[0], 8196);//mettre le read en non bloquant sinon les problemes;
+
+	if (waitpid(pid, &status, WNOHANG) > 0)
+		children = 0;
+	if (size == -1 || size == 0)
+	{
+		if (children == 1)
+			return (0);
+		close(p_read[0]);
+		close(p_read[1]);
+		return (1);
+	}
+	if (cgi_response.size() == 0)
+		cgi_header();
+	else
+		write(fd, buff, size);
 	return (0);
-}
-/////////////////////////POST///////////////////////////////////////////////////
-
-Post::Post() : Request()
-{
-
-}
-
-bool	Post::response(int fd)
-{
-	std::cout << "got a post" << std::endl;
-	if (!(serv->get_protocol() & POST))
-		return (handle_error(fd, serv, "405", 405));
-	std::string	path = serv->get_root();
-	path.append(target);
-	write(fd, "POST received\n", 15);
-	return (0);
-}
-
-Post::~Post()
-{
-
-}
-/////////////////////////DELETE///////////////////////////////////////////////////
-
-Delete::Delete() : Request()
-{
-
-}
-
-bool	Delete::response(int fd)
-{
-	std::cout << "got a delete" << std::endl;
-	if (!(serv->get_protocol() & DELETE))
-		return (handle_error(fd, serv, "405", 405));
-	std::string	path = serv->get_root();
-	path.append(target);
-	if (access(path.c_str(), F_OK))
-		return (handle_error(fd, serv, "404", 404));
-	if (unlink(path.c_str()))
-		return (handle_error(fd, serv, "403", 403));
-
-	std::string	response;
-	response.append("HTTP/1.1 204 No Content\r\n").append(Date().get_date()).append("\r\n");
-	write(fd, response.c_str(), response.size());
-	return (1);
-}
-
-Delete::~Delete()
-{
-
 }

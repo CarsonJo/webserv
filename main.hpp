@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <errno.h>
+#include <signal.h>
 #include "Webserv/Webserv.hpp"
 #include "Webserv/Addrinfo.hpp"
 #include "Webserv/Fsocket.hpp"

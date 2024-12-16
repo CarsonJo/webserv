@@ -16,6 +16,7 @@ class Http_header
 		static void	status(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 		static void	authorization(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 		static void	host(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
+		static void	transfer_encoding(Request *req, std::string& toRead, std::size_t& pos, ServerBlock *serv);
 		static std::map<std::string, Parsed_header>	header_func;
 	private :
 		Http_header();

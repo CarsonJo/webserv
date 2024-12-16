@@ -76,7 +76,7 @@ void	Webserv::new_connect(int &event)
 	{
 		if (arr[i].revents == POLLIN)
 		{
-			std::cout << "add" << std::endl;
+			std::cerr << "add" << std::endl;
 			fd = virtualserv[i]->accept_connect();
 			if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 				throw(std::exception());
@@ -98,17 +98,17 @@ void	Webserv::handle_recv(int &event)
 {
 	for (unsigned long i = master_socket; i < arr.size() && event > 0; i++)
 	{
-		if ((arr[i].revents & POLLIN) != 0)
+		if ((arr[i].revents & POLLIN) != 0) //bug si plusieurs requete en meme temps ?
 		{
 			try
 			{
-				request.insert(std::pair<int, Request *>(arr[i].fd, Request::parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
+				request.insert(std::pair<int, Request *>(arr[i].fd, parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
 				arr[i].events = POLLOUT | POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				event--;
 			}
 			catch(std::exception &a)
 			{
-				std::cout<<"removed" << std::endl;
+				std::cerr<<"removed" << std::endl;
 				std::map<int, Request*>::iterator	it = request.find(arr[i].fd); //ne devrait jamais trouver
 				if (it != request.end())
 					request.erase(request.find(arr[i].fd));//ne devrait jamais s'executer
@@ -123,14 +123,17 @@ void	Webserv::handle_recv(int &event)
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
 			int error = it->second->response(arr[i].fd);
+			std::cerr << "Error: " << error <<std::endl;
 			if (error)
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				delete it->second;
 				request.erase(it);
-				event--;
 				if (error == CLOSE)
+				{
+					std::cerr << "removed2" <<std::endl;
 					this->erase(arr[i].fd);
+				}
 			}
 			event--;
 		}

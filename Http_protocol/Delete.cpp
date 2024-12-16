@@ -56,6 +56,7 @@ int Delete::response(int fd)
     return 1; 
 }
 
+
 std::string	Delete::type()
 {
 	return ("DELETE");
@@ -64,4 +65,9 @@ std::string	Delete::type()
 Delete::~Delete()
 {
 
+}
+
+int Delete::type_code()
+{
+	return (DELETE);
 }

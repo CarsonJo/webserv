@@ -82,7 +82,7 @@ Date::Date() : date("")
 	ptm = gmtime(&rtime);
 	date.append("Date : ").append(week_day(ptm->tm_wday)).append(to_string(ptm->tm_mday))
 	.append(month(ptm->tm_mon)).append(year(ptm->tm_year)).append(hour_time(ptm));
-	std::cout << "date :" << date << std::endl;
+	std::cerr << "date :" << date << std::endl;
 }
 
 std::string Date::get_date()

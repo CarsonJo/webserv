@@ -33,9 +33,35 @@ static std::string	next_word(std::string& sub, std::size_t& i)
 	return (ret);
 }
 
-void	parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret)
+int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 {
-	ret->set_body(to_parsed.substr(pos));
+	if (ret->get_route().get_methods() & ret->type_code())
+	{
+		ret->set_error(fd, ret->get_serv(), "405", 405);
+		return (1);
+	}
+	/*
+	if (ret->get_content_type() == "multipart/form-data")
+	{
+		if (ret->type_code() != POST || ret->get_upload().size() == 0)
+		{
+			ret->set_error(fd, ret->get_serv(), "400", 400);
+			return (1);
+		}
+		//inserer parsing multipart form data
+	
+		
+	} */
+	else if (ret->get_int_content_length() < 0)
+	{
+		ret->set_error(fd, ret->get_serv(), "400", 400);//mettre l'erreur specifique content length
+		return (1);
+	}
+	else if (to_parsed.size() < ret->get_int_content_length() + pos)
+		ret->set_body(to_parsed.substr(pos));
+	else
+		ret->set_body(to_parsed.substr(pos, ret->get_int_content_length()));
+	return (0);
 }
 
 int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd)
@@ -70,6 +96,8 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 		return (0);
 	}
 }
+
+
 //a refaire
 static void	resolve_path(Request *req, std::string path, const VirtualServ *serv,
 							const std::map<std::string, Route>& arr)
@@ -111,7 +139,9 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 	ret = 0;
 	try
 	{
-		if (read(fd, &line[0], 8096) == -1)
+		int i = read(fd, &line[0], 8096);
+		std::cout << "READ size:" << i << std::endl;
+		if (i == -1)
 			throw(std::exception());
 		to_parsed = std::string(line);
 		end = to_parsed.find("\n");
@@ -135,12 +165,13 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 			ret->set_error(fd, serv->get_default(), "405", 405);
 		std::cerr << "protocole:" << ret->get_protocole_version() << std::endl;
 		parsed_header(to_parsed, pos, ret, serv, fd);
-		ret->set_body(to_parsed.substr(pos));
 		if (ret->get_serv() == 0)
 		{
 			ret->set_error(fd, 0, "400", 400);
 			return (ret);
 		}
+		if (parsed_body(fd, to_parsed, pos, ret))
+			return (ret);
 		std::cerr << "PITIE :" << serv->unique()->get_routes().size() << serv->get_default()->get_routes().size() << std::endl;
 		if (ret->get_serv()->get_routes().size() == 0)
 			ret->set_route(ret->get_serv()->get_default_route());

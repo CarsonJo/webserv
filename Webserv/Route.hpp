@@ -27,6 +27,7 @@ public:
         this->autoindex = other.autoindex;
 		this->cgi_enabled = other.cgi_enabled;
 		this->default_page = other.default_page;
+        this->upload_path = other.upload_path;
     }
 
     Route& operator=(const Route& other) {
@@ -37,6 +38,7 @@ public:
             this->autoindex = other.autoindex;
 			this->cgi_enabled = other.cgi_enabled;
 			this->default_page = other.default_page;
+            this->upload_path = other.upload_path;
         }
         return *this;
     }
