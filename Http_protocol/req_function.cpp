@@ -40,6 +40,7 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 		ret->set_error(fd, ret->get_serv(), "405", 405);
 		return (1);
 	}
+	/*
 	if (ret->get_content_type() == "multipart/form-data")
 	{
 		if (ret->type_code() != POST || ret->get_upload().size() == 0)
@@ -48,7 +49,9 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 			return (1);
 		}
 		//inserer parsing multipart form data
-	}
+	
+		
+	} */
 	else if (ret->get_int_content_length() < 0)
 	{
 		ret->set_error(fd, ret->get_serv(), "400", 400);//mettre l'erreur specifique content length

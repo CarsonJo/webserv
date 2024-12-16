@@ -48,16 +48,18 @@ void	VirtualServ::default_var(const std::string& line, VirtualServ& serv)
 
 }
 
-void	VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
+void VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
 {
-	std::string	temp = get_value(line, myascci);
-	if (temp.find("GET") != std::string::npos)
-		serv.default_route.set_methods(GET);
-	if (temp.find("POST") != std::string::npos)
-		serv.default_route.set_methods(POST);
-	if (temp.find("DELETE") != std::string::npos)
-		serv.default_route.set_methods(DELETE);
-	std::cerr << "protocole : " << serv.accepted_protocol << std::endl;
+    std::string temp = get_value(line, myascci);
+
+    if (temp.find("GET") != std::string::npos)
+        serv.accepted_protocol |= GET;
+    if (temp.find("POST") != std::string::npos)
+       serv.accepted_protocol |= POST;
+    if (temp.find("DELETE") != std::string::npos)
+        serv.accepted_protocol |= DELETE;
+
+    std::cerr << "protocole : " << serv.accepted_protocol << std::endl;
 }
 
 std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()

@@ -1,151 +1,153 @@
 #include "Error.hpp"
+#include <map>
+#include <string>
+#include <iostream>
+#include <unistd.h> 
+#include <sstream> 
+// for write
 
-std::string	e406(const VirtualServ* serv);
-std::string	e405(const VirtualServ* serv);
-std::string	e404(const VirtualServ* serv);
-std::string	e403(const VirtualServ* serv);
-std::string	e413(const VirtualServ* serv);
-std::string	e500(const VirtualServ* serv);
-std::string	e400(const VirtualServ* serv);
 
-std::map<int, Error_function> fill_function()
-{
-	std::map<int, Error_function> ret;
-
-	ret[405] = e405;
-	ret[403] = e403;
-	ret[404] = e404;
-	ret[406] = e406;
-	ret[413] = e413;
-    ret[500] = e500;
-	ret[400] = e400;
-	return (ret);
+	std::string intToString(int value) {
+    std::ostringstream oss;
+    oss << value;
+    return oss.str();
 }
 
-Error::Error() : fd(-1), serv(0), error(0), str_error("")
-{
 
+std::string generateErrorPage(const std::string& title, const std::string& message) {
+    return "<!doctype html>\n"
+           "<html>\n"
+           "<head>\n"
+           "    <title>" + title + "</title>\n"
+           "</head>\n"
+           "<body>\n"
+           "    <h1>" + title + "</h1>\n"
+           "    <p>" + message + "</p>\n"
+           "</body>\n"
+           "</html>\n";
 }
 
-Error::Error(int fd, const VirtualServ* serv, int error, std::string str_error) :
-	fd(fd), serv(serv), error(error), str_error(str_error)
-{
-
-}
-
-void	Error::set_error(int fd, const VirtualServ* serv, std::string str_error, int error)
-{
-	this->fd = fd;
-	this->serv = serv;
-	this->error = error;
-	this->str_error = str_error;
-}
-
-int	Error::trap_card_activate()
-{
-	if (!*this)
-		throw(std::exception());
-	return (handle_error(fd, serv, str_error, error));
-}
-
-std::map<int, Error_function>Error::function_arr = fill_function();
-
-std::string	Error::get_error(int code, const VirtualServ* serv)
-{
-	return (function_arr.at(code)(serv));
-}
-
-int	Error::handle_error(int fd, const VirtualServ* server, std::string error_code, int error)
-{
-	std::string header;
-
-
-	header.append("HTTP/1.1 ").append(error_code).append(Error::get_error(error, server));
-	std::cerr << "ERROR: " << header << std::endl;
-	write(fd, header.c_str(), header.size());
-	return (2);
-}
-
-Error::operator bool() const
-{
-	if (fd == -1)
-		return (0);
-	return (1);
-}
-
-std::string	e405(const VirtualServ* serv)
-{
-	std::string	ret;
-	int			prot = serv->get_protocol();
-
-	ret.append(" Method not allowed\r\nAllow: ");
-	if (prot & GET)
-		ret.append("GET, ");
-	if (prot & POST)
-		ret.append("POST, ");
-	if (prot & DELETE)
-		ret.append("DELETE, ");
-	ret.append("\r\n");
-	return (ret);
-}
-
-// Mauvaise synthaxe ou mauvais param
-std::string e400(const VirtualServ* serv) {
-    std::string ret;
+std::string e406(const VirtualServ* serv) {
     (void)serv;
-    ret.append(" Bad Request\r\n").append(Date().get_date());
-    return ret;
+    return generateErrorPage("406 Not Acceptable", "The server cannot produce a response matching the request.");
 }
 
-// Fichier uploade = trop lourd
+std::string e405(const VirtualServ* serv) {
+	/*
+    std::string methods = "Allowed Methods: ";
+    int prot = serv->get_protocol();
+    if (prot & GET) methods.append("GET ");
+    if (prot & POST) methods.append("POST ");
+    if (prot & DELETE) methods.append("DELETE ");
+	*/
+	(void) serv;
+    return generateErrorPage("405 Method Not Allowed", "The method is not allowed.\n");
+}
+
+std::string e404(const VirtualServ* serv) {
+    (void)serv;
+    return generateErrorPage("404 Not Found", "The requested resource was not found on this server.");
+}
+
+std::string e403(const VirtualServ* serv) {
+    (void)serv;
+    return generateErrorPage("403 Forbidden", "Access to the requested resource is forbidden.");
+}
+
 std::string e413(const VirtualServ* serv) {
-    std::string ret;
     (void)serv;
-    ret.append(" Payload Too Large\r\n");// placeholder
-    return ret;
+    return generateErrorPage("413 Payload Too Large", "The request is larger than the server is willing or able to process.");
 }
 
-//Prob CGI, config cote client + tt le reste des exceptions non gerees avant
 std::string e500(const VirtualServ* serv) {
-    std::string ret;
     (void)serv;
-    ret.append(" Internal Server Error\r\n").append(Date().get_date());
+    return generateErrorPage("500 Internal Server Error", "The server encountered an internal error and could not complete your request.");
+}
+
+std::string e400(const VirtualServ* serv) {
+    (void)serv;
+    return generateErrorPage("400 Bad Request", "The server could not understand the request due to invalid syntax.");
+}
+
+
+std::map<int, Error_function> fill_function() {
+    std::map<int, Error_function> ret;
+    ret[405] = e405;
+    ret[403] = e403;
+    ret[404] = e404;
+    ret[406] = e406;
+    ret[413] = e413;
+    ret[500] = e500;
+    ret[400] = e400;
     return ret;
 }
 
-std::string	e406(const VirtualServ* serv)
-{
-	std::string	ret;
-
-	(void)serv;
-	ret.append(" NOT Acceptable\r\n").append(Date().get_date());
-	return (ret);
+std::map<int, std::string> status_messages;
+void fill_status_messages() {
+    status_messages[400] = "Bad Request";
+    status_messages[403] = "Forbidden";
+    status_messages[404] = "Not Found";
+    status_messages[405] = "Method Not Allowed";
+    status_messages[406] = "Not Acceptable";
+    status_messages[413] = "Payload Too Large";
+    status_messages[500] = "Internal Server Error";
 }
 
-std::string	e403(const VirtualServ* serv)
-{
-	std::string	ret;
 
-	(void)serv;
-	ret.append(" Forbidden\r\n").append(Date().get_date());
-	return (ret);
+
+
+Error::Error() : fd(-1), serv(NULL), error(0), str_error("") {}
+
+Error::Error(int fd, const VirtualServ* serv, int error, std::string str_error)
+    : fd(fd), serv(serv), error(error), str_error(str_error) {}
+
+void Error::set_error(int fd, const VirtualServ* serv, std::string str_error, int error) {
+    this->fd = fd;
+    this->serv = serv;
+    this->error = error;
+    this->str_error = str_error;
 }
 
-std::string	e404(const VirtualServ* serv)
-{
-	std::string		ret;
-	// std::ifstream	f;
-	// char			buff[S404];
-	// int a;
-	(void)serv;
-	// f.open(ROOT, std::fstream::in);
-	// if (!f.is_open())
-	// 	std::cerr << "asdfasdf" << std::endl;
-	// f.read(&buff[0], S404);
-	// a = f.gcount();
-	// std::cerr << a << buff << std::endl;
-	ret.append(" Not Found\r\n");//.append("Content-Length: ").append(SIZE_404).append("\r\nContent-Type: text/html\r\n\r\n")
-	//.append(std::string(buff));
-
-	return (ret);
+std::string Error::get_error(int code, const VirtualServ* serv) {
+    return function_arr.at(code)(serv);
 }
+
+int Error::trap_card_activate() {
+    if (!*this)
+        throw std::exception();
+    return handle_error(fd, serv, str_error, error);
+}
+
+
+int Error::handle_error(int fd, const VirtualServ* serv, std::string error_code, int error) {
+
+
+	 if (status_messages.empty()) {
+        fill_status_messages();
+    }
+
+    std::string reason_phrase = status_messages[error];
+
+    
+    std::string body = Error::get_error(error, serv);
+
+   
+    std::string response;
+    response.append("HTTP/1.1 ").append(error_code).append(" ").append(reason_phrase).append("\r\n");
+    response.append("Content-Type: text/html\r\n");
+    response.append("Content-Length: ").append(intToString(body.size())).append("\r\n");
+    response.append("\r\n"); 
+    response.append(body);
+
+   
+    std::cerr << "ERROR RESPONSE:\n" << response << std::endl;
+    write(fd, response.c_str(), response.size());
+    return 2;
+}
+
+Error::operator bool() const {
+    return fd != -1;
+}
+
+
+std::map<int, Error_function> Error::function_arr = fill_function();

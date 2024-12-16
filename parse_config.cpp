@@ -168,7 +168,7 @@ void config_server(std::fstream &config, std::string &line, VirtualServ &server)
 		}
     }
 
-	if (server.get_name() == "" || server.get_port() == "" || server.get_default_route().get_methods() == 0
+	if (server.get_name() == "" || server.get_port() == "" || server.get_protocol() == 0
 		|| server.get_default_route().get_root() == "") {
         std::cerr << "Error: Server configuration incomplete. Missing one or more required elements that are:\n"
                   << " - server_name\n"
