@@ -7,7 +7,7 @@ server{
 	host	0.0.0.0;
 	{
 		location /;
-		methods GET POST;
+		methods DELETE;
 		root ./root/server1;
 		autoindex on;
 		upload_path  ./root/server1/upload;

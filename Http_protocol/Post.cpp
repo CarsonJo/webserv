@@ -14,7 +14,7 @@ int	Post::response(int fd)
 		std::cout << "loop: " << loop << std::endl;
 		if (loop <= 0)
 		{
-			Error::handle_error(fd, serv, "400", 400);
+			Error::handle_error(fd, serv, "400", 400, 0);
 			return (CLOSE);
 		}
 		return (0);
@@ -27,12 +27,15 @@ int	Post::response(int fd)
 	if (!first)
 	{
 		std::cout << "entering post" << std::endl;
-		if (!(serv->get_protocol() & POST))
-			return (Error::handle_error(fd, serv, "405", 405));
+		if (!(route.get_methods() & POST))
+		{
+			int data = route.get_methods();
+			return (Error::handle_error(fd, serv, "405", 405, &data));
+		}
 		if (target.find(".cgi") != std::string::npos)
 		{
 			if (!route.is_cgi_enabled())
-				return (Error::handle_error(fd, serv, "403", 403));
+				return (Error::handle_error(fd, serv, "403", 403, 0));
 			method = CGI;
 			first = 1;
 			return (set_up_cgi(fd));
@@ -46,7 +49,7 @@ int	Post::response(int fd)
 		{
 			std::cout << "processing error" << std::endl;
 			first = 1;
-			return (Error::handle_error(fd, serv, "400", 400));
+			return (Error::handle_error(fd, serv, "403", 403, 0));
 		}
 		first = 1;
 	}
@@ -82,7 +85,7 @@ int Post::handle_upload(int fd)
 			std::cout << response << "RESPONSE_END" << std::endl;
 			return (1);
 		}
-		return (Error::handle_error(fd, get_serv(), "400", 400));
+		return (Error::handle_error(fd, get_serv(), "400", 400, 0));
 	}
 	catch(std::exception& e)
 	{
@@ -99,7 +102,7 @@ std::string Post::handle_multipart(int fd)
     if (content_type.empty())
     {
         std::cout << "[ERROR] Content-Type is missing in the request." << std::endl;
-        Error::handle_error(fd, get_serv(), "400", 400);
+        Error::handle_error(fd, get_serv(), "400", 400, 0);
 		throw(std::exception());
     }
 
@@ -109,7 +112,7 @@ std::string Post::handle_multipart(int fd)
     if (content_type.find("multipart/form-data") == std::string::npos)
     {
         std::cout << "[ERROR] Content-Type is not multipart/form-data." << std::endl;
-        Error::handle_error(fd, get_serv(), "400", 400);
+        Error::handle_error(fd, get_serv(), "400", 400, 0);
 		throw(std::exception());
     }
 
@@ -118,7 +121,7 @@ std::string Post::handle_multipart(int fd)
     if (boundary.empty())
     {
         std::cout << "[ERROR] Boundary value is missing." << std::endl;
-        Error::handle_error(fd, get_serv(), "400", 400);
+        Error::handle_error(fd, get_serv(), "400", 400, 0);
 		throw(std::exception());
     }
 
@@ -131,7 +134,7 @@ std::string Post::handle_multipart(int fd)
     if (bodi.empty())
     {
         std::cout << "[ERROR] Request bodi is empty." << std::endl;
-        Error::handle_error(fd, get_serv(), "400", 400);
+        Error::handle_error(fd, get_serv(), "400", 400, 0);
 		throw(std::exception());
     }
 
@@ -215,7 +218,7 @@ if (disposition.empty() || disposition.find("form-data") == std::string::npos)
             if (upload_path.empty())
             {
                 std::cout << "[ERROR] Upload path is not set." << std::endl;
-                Error::handle_error(fd, get_serv(), "500", 500);
+                Error::handle_error(fd, get_serv(), "500", 500, 0);
 				throw(std::exception());
             }
 			ret = filename;
@@ -223,7 +226,7 @@ if (disposition.empty() || disposition.find("form-data") == std::string::npos)
             if (!outfile)
             {
                 std::cout << "[ERROR] Failed to open file for writing: " << upload_path + "/" + filename << std::endl;
-                Error::handle_error(fd, get_serv(), "500", 500);
+                Error::handle_error(fd, get_serv(), "500", 500, 0);
 				throw(std::exception());
             }
 

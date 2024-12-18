@@ -124,10 +124,10 @@ int	Get::send_header()
 	std::string path = target;
 
 	if (access(path.c_str(), F_OK | R_OK))
-		return (Error::handle_error(fd, serv, "403", 403));//a check
+		return (Error::handle_error(fd, serv, "403", 403, 0));//a check
 	file_to_send.open(path.c_str(), std::fstream::in | std::ios::binary);
 	if (!file_to_send.is_open())
-		return (Error::handle_error(fd, serv, "403", 403));//a check
+		return (Error::handle_error(fd, serv, "403", 403, 0));//a check
 	content_length = find_file_size(file_to_send).append("\r\n");
 	content_type = find_content_type(target);
 	make_header(header, content_length, content_type);
@@ -144,11 +144,14 @@ int	Get::response(int fd)
 		if (err)
 			return (err.trap_card_activate());
 		if (!(route.get_methods() & GET))
-			return (Error::handle_error(fd, serv, "405", 405));//a changer en method not allowed
+		{
+			int data = route.get_methods();
+			return (Error::handle_error(fd, serv, "405", 405, &data));//a changer en method not allowed
+		}
 		if (target.find(".cgi") != std::string::npos)
 		{
 			if (!route.is_cgi_enabled())
-				return (Error::handle_error(fd, serv, "403", 403));
+				return (Error::handle_error(fd, serv, "403", 403, 0));
 			method = CGI;
 			return (set_up_cgi(fd));
 		}
@@ -160,13 +163,13 @@ int	Get::response(int fd)
 				target.append(route.get_default());
 				std::cerr << "New target : " << target << std::endl;
 				if (access(target.c_str(), F_OK | R_OK) < 0)
-					return	(Error::handle_error(fd, serv, "403", 403));
+					return	(Error::handle_error(fd, serv, "403", 403, 0));
 				return (send_header());
 			}
 			else if (route.is_autoindex())
 				method = AUTOINDEX;
 			else
-				return (Error::handle_error(fd, serv, "403", 403));
+				return (Error::handle_error(fd, serv, "403", 403, 0));
 		}
 		else
 		{
@@ -204,7 +207,7 @@ int	Get::response(int fd)
 
                     first = 0;
                 } catch (const std::exception& e) {
-                    return Error::handle_error(fd, serv, "500", 500);
+                    return Error::handle_error(fd, serv, "500", 500, 0);
                 }
                 return 1;
 				break;

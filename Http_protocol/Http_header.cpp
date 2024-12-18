@@ -98,7 +98,7 @@ void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, Serv
 	if (end == std::string::npos)
 		throw(std::exception());
 	if (req->get_serv() != 0)
-		req->set_error(req->get_fd(), req->get_serv(), "400", 400);
+		req->set_error(req->get_fd(), req->get_serv(), "400", 400, 0);
 	std::string host = next_word(toRead, pos, " \t\r\n:");
 	std::string port = next_word(toRead, pos, " \t\r\n:");
 	req->set_host(host + ":" + port);

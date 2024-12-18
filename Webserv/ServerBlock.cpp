@@ -25,11 +25,6 @@ void	ServerBlock::set_port(const std::string &port)
 	this->port = port;
 }
 
-void ServerBlock::set_name(const std::string& name) {
-
-    this->name = name; 
-}
-
 int	ServerBlock::accept_connect()
 {
 	return(socket_fd.accept_connect());
@@ -53,6 +48,11 @@ void	ServerBlock::set_launched(bool val)
 
 void ServerBlock::add(const VirtualServ& serv)
 {
+	if (arr.find(serv.get_name()) != arr.end())
+	{
+		std::cerr << "[ERROR] two virtual serv have the same name" << std::endl;
+		throw (std::exception());
+	}
 	arr[serv.get_name()] = serv; // const assign to non const problem ?
 
 }
@@ -109,9 +109,4 @@ VirtualServ* ServerBlock::unique()
 VirtualServ* ServerBlock::get_default()
 {
 	return (&def);
-}
-
-std::string ServerBlock::get_name() const {
-    
-    return (name);
 }

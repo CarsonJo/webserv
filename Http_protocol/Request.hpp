@@ -74,7 +74,7 @@ class Request
 		void								set_upload(const std::string& str);
 		void								set_serv(const VirtualServ* to_set);
 		void								set_host(const std::string& str);
-		void								set_error(int fd, const VirtualServ *s, const std::string& str, int code);
+		void								set_error(int fd, const VirtualServ *s, const std::string& str, int code, void *data);
 		void								add_env(const std::string& str, const std::string& value);
 		void								add_body(std::string body);
 		std::map<std::string, std::string>&	get_cgi_env();

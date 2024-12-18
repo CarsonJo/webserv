@@ -8,7 +8,7 @@
 #define SIZE_404	"63"
 #define S404		63
 class VirtualServ;
-typedef	std::string (*Error_function)(const VirtualServ* serv, std::string& header);
+typedef	std::string (*Error_function)(const VirtualServ* serv, std::string& header, void *data);
 
 class Error
 {
@@ -16,9 +16,9 @@ class Error
 
 		Error();
 		Error(int fd, const VirtualServ* serv, int error, std::string str_error);
-		static int					handle_error(int fd, const VirtualServ* serv, std::string error_code, int error);
-		static std::string	get_error(int code, const VirtualServ* serv, std::string& header);
-		void				set_error(int fd, const VirtualServ* serv, std::string error_code, int error);
+		static int					handle_error(int fd, const VirtualServ* serv, std::string error_code, int error, void *data);
+		static std::string	get_error(int code, const VirtualServ* serv, std::string& header, void *data);
+		void				set_error(int fd, const VirtualServ* serv, std::string error_code, int error, void *data);
 		int					trap_card_activate();
 		operator	bool() const;
 	private :
@@ -27,6 +27,7 @@ class Error
 		const VirtualServ*	serv;
 		int					error;
 		std::string			str_error;
+		void				*data;
 		static std::map<int, Error_function> function_arr;
 };
 #endif

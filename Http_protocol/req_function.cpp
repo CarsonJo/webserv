@@ -37,7 +37,8 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 {
 	if (ret->get_route().get_methods() & ret->type_code())
 	{
-		ret->set_error(fd, ret->get_serv(), "405", 405);
+		int data = ret->get_route().get_methods();
+		ret->set_error(fd, ret->get_serv(), "405", 405, &data);
 		return (1);
 	}
 	/*
@@ -54,12 +55,12 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 	} */
 	else if (ret->get_content_type().size() && ret->get_int_content_length() <= 0)
 	{
-		ret->set_error(fd, ret->get_serv(), "411", 411);//mettre l'erreur specifique content length
+		ret->set_error(fd, ret->get_serv(), "411", 411, 0);//mettre l'erreur specifique content length
 		return (1);
 	}
 	else if (ret->get_int_content_length() > 20000000)
 	{
-		ret->set_error(fd, ret->get_serv(), "413", 413);//mettre l'erreur specifique content length
+		ret->set_error(fd, ret->get_serv(), "413", 413, 0);//mettre l'erreur specifique content length
 		return (1);
 	}
 	else if (to_parsed.size() < ret->get_int_content_length() + pos)
@@ -79,6 +80,8 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 		std::size_t										temp;
 		std::size_t										end = to_parsed.find("\r\n\r\n");
 
+		if (end == std::string::npos)
+			return (1);
 		while (1)
 		{
 			if (end <= pos + 1)
@@ -152,7 +155,7 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		ret = checkRequest(next_word(to_parsed, pos));
 		if (end == std::string::npos)
 		{
-			ret->set_error(fd, 0, "400", 400);
+			ret->set_error(fd, 0, "400", 400, 0);
 			return (ret);
 		}
 		ret->set_fd(fd);
@@ -165,12 +168,20 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		}
 		ret->set_protocole_version(next_word(to_parsed, pos));
 		if (pos > end)
-			ret->set_error(fd, serv->get_default(), "405", 405);
+		{
+			ret->set_error(fd, serv->get_default(), "400", 400, 0);
+			return (ret);
+		}
+		if (ret->get_protocole_version() != "HTTP/1.1")
+		{
+			ret->set_error(fd, serv->get_default(), "505", 505, 0);
+			return (ret);
+		}
 		std::cerr << "protocole:" << ret->get_protocole_version() << std::endl;
 		parsed_header(to_parsed, pos, ret, serv, fd);
 		if (ret->get_serv() == 0)
 		{
-			ret->set_error(fd, 0, "400", 400);
+			ret->set_error(fd, 0, "400", 400, 0);
 			return (ret);
 		}
 		if (parsed_body(fd, to_parsed, pos, ret))
@@ -210,7 +221,7 @@ void	add_to_body(int fd, Request* req)
 	req->set_body(req->get_body() + to_parsed);
 	if (req->get_body().size() > 20000000)
 	{
-		Error::handle_error(fd, req->get_serv(), "413", 413);
+		Error::handle_error(fd, req->get_serv(), "413", 413, 0);
 		throw(std::exception());
 	}
 }

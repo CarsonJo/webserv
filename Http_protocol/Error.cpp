@@ -27,69 +27,85 @@ std::string generateErrorPage(const std::string& title, const std::string& messa
            "</html>\n";
 }
 
-std::string e406(const VirtualServ* serv, std::string& header) {
+std::string e406(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("406 Not Acceptable", "The server cannot produce a response matching the request.");
 }
 
-std::string e405(const VirtualServ* serv, std::string& header) {
-    std::string methods = "Allowed Methods: ";
-    int prot = serv->get_protocol();
-    if (prot & GET) methods.append("GET ");
-    if (prot & POST) methods.append("POST ");
-    if (prot & DELETE) methods.append("DELETE ");
+std::string e405(const VirtualServ* serv, std::string& header, void *data) {
+    std::string methods = "Allow: ";
+    int* prot = (int *)data;
+    if (*prot & GET) methods.append("GET ");
+    if (*prot & POST) methods.append("POST ");
+    if (*prot & DELETE) methods.append("DELETE ");
 	header += methods;
+	header += "\r\n";
 	(void) serv;
     (void)header;
 	return generateErrorPage("405 Method Not Allowed", "The method is not allowed.\n");
 }
 
-std::string e404(const VirtualServ* serv, std::string& header) {
+std::string e404(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("404 Not Found", "The requested resource was not found on this server.");
 }
 
-std::string e403(const VirtualServ* serv, std::string& header) {
+std::string e403(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("403 Forbidden", "Access to the requested resource is forbidden.");
 }
 
-std::string e413(const VirtualServ* serv, std::string& header) {
+std::string e413(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("413 Payload Too Large", "The request is larger than the server is willing or able to process.");
 }
 
-std::string e500(const VirtualServ* serv, std::string& header) {
+std::string e500(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("500 Internal Server Error", "The server encountered an internal error and could not complete your request.");
 }
 
-std::string e411(const VirtualServ* serv, std::string& header) {
+std::string e505(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
+	return generateErrorPage("505 HTTP version not supported", "The server only support HTTP/1.1.");
+}
+
+std::string e411(const VirtualServ* serv, std::string& header, void *data) {
+    (void)serv;
+    (void)header;
+	(void)data;
 	return generateErrorPage("411 Length required", "the content length is required.");
 }
 
-// std::string e413(const VirtualServ* serv, std::string& header) {
+// std::string e413(const VirtualServ* serv, std::string& header, void *data) {
 //     (void)serv;
 //     (void)header;
 // 	return generateErrorPage("413 Content too large", "The content are too large");
 // }
 
-std::string e400(const VirtualServ* serv, std::string& header) {
+std::string e400(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
+	(void)data;
 	return generateErrorPage("400 Bad Request", "The server could not understand the request due to invalid syntax.");
 }
 
-std::string e301(const VirtualServ* serv, std::string& header) {
-    (void)serv;
-    (void)header;
+std::string e301(const VirtualServ* serv, std::string& header, void *data) {
+	(void)serv;
+	(void)data;
+	header = *(std::string*)data;
 	return generateErrorPage("301 Moved Permanently", "The ressources have been moved.");
 }
 
@@ -103,6 +119,7 @@ std::map<int, Error_function> fill_function() {
     ret[413] = e413;
     ret[500] = e500;
     ret[400] = e400;
+	ret[505] = e505;
     return ret;
 }
 
@@ -116,6 +133,7 @@ void fill_status_messages() {
     status_messages[413] = "Payload Too Large";
 	status_messages[411] = "Content Length required";
     status_messages[500] = "Internal Server Error";
+	status_messages[505] = "HTTP Version Not Supported";
 	status_messages[301] = "Moved Permanently";
 }
 
@@ -127,25 +145,26 @@ Error::Error() : fd(-1), serv(NULL), error(0), str_error("") {}
 Error::Error(int fd, const VirtualServ* serv, int error, std::string str_error)
     : fd(fd), serv(serv), error(error), str_error(str_error) {}
 
-void Error::set_error(int fd, const VirtualServ* serv, std::string str_error, int error) {
+void Error::set_error(int fd, const VirtualServ* serv, std::string str_error, int error, void *data) {
     this->fd = fd;
     this->serv = serv;
     this->error = error;
     this->str_error = str_error;
+	this->data = data;
 }
 
-std::string Error::get_error(int code, const VirtualServ* serv, std::string& header) {
-    return function_arr.at(code)(serv, header);
+std::string Error::get_error(int code, const VirtualServ* serv, std::string& header, void *data) {
+    return function_arr.at(code)(serv, header, data);
 }
 
 int Error::trap_card_activate() {
     if (!*this)
         throw std::exception();
-    return handle_error(fd, serv, str_error, error);
+    return handle_error(fd, serv, str_error, error, data);
 }
 
 
-int Error::handle_error(int fd, const VirtualServ* serv, std::string error_code, int error) {
+int Error::handle_error(int fd, const VirtualServ* serv, std::string error_code, int error, void *data) {
 
 
 	 if (status_messages.empty()) {
@@ -155,7 +174,7 @@ int Error::handle_error(int fd, const VirtualServ* serv, std::string error_code,
     std::string reason_phrase = status_messages[error];
 	std::string	header = "";
 
-    std::string body = Error::get_error(error, serv, header);
+    std::string body = Error::get_error(error, serv, header, data);
 
 
     std::string response;

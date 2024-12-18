@@ -86,9 +86,9 @@ void	Request::set_upload(const std::string& str)
 	upload = str;
 }
 
-void	Request::set_error(int fd, const VirtualServ *s, const std::string& str, int code)
+void	Request::set_error(int fd, const VirtualServ *s, const std::string& str, int code, void *data)
 {
-	err.set_error(fd, s, str, code);
+	err.set_error(fd, s, str, code, data);
 }
 
 void	Request::add_env(const std::string& str, const std::string& value)
@@ -248,7 +248,7 @@ int Request::set_up_cgi(int fd)
 	set_up_child(&p_read[0], &p_write[0]);
 	set_var_env();
 	if (access(target.c_str(), F_OK | X_OK) != 0)
-		return (Error::handle_error(fd, serv, "404", 404));
+		return (Error::handle_error(fd, serv, "404", 404, 0));
 	if (int_content_length > body.size())
 		write(p_write[1], body.c_str(), body.size());
 	else
@@ -256,7 +256,7 @@ int Request::set_up_cgi(int fd)
 	pid = fork();
 
 	if (pid == -1)
-		return (Error::handle_error(fd, serv, "405", 405));
+		return (Error::handle_error(fd, serv, "500", 500, 0));
 	if (!pid)
 	{
 		char **envp = 0;
