@@ -61,7 +61,7 @@ private:
     std::string root;
 	std::string host;
     std::string default_page;
-	Route						default_route;
+	Route		default_route;
     int accepted_protocol;
 
     std::map<std::string, Route> routes;

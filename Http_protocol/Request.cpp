@@ -8,10 +8,29 @@ const char *Test::what() const throw()
 	return ("test");
 }
 //verifier tous les fields
-Request::Request() : protocole_version(""), content_length(""),  content_type(""), target(""), first(0)
-, serv(0), loop(1000)
+Request::Request()
+	: location(""),
+	status(""),
+	protocole_version(""),
+	content_length(""),
+	int_content_length(0),
+	content_type(""),
+	target(""),
+	url(""),
+	auth(""),
+	upload(""),
+	host(""),
+	body(""),
+	cgi_response(""),
+	boundary(""),
+	first(0),
+	err(),
+	serv(0),
+	route(),
+	loop(1000),
+	redirect("")
 {
-	for (int i = 0; i < 8192; i++)
+	for (int i = 0; i < 10000; i++)
 		buff[i] = 0;
 }
 

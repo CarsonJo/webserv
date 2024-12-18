@@ -20,7 +20,7 @@ Addrinfo::Addrinfo(int family, int socktype, int protocol, int flags, const std:
 	this->port = port;
 }
 
-Addrinfo::Addrinfo() : hints((struct addrinfo){0,0,0,0,0,0,0,0}), res(0), port("-1")
+Addrinfo::Addrinfo() : hints((struct addrinfo){0,0,0,0,0,0,0,0}), res(0), port("-1"), ip("")
 {
 
 }

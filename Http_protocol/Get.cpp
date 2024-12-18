@@ -99,7 +99,7 @@ static void make_header(std::string& header, std::string& content_length, std::s
 
 int	Get::send_file()
 {
-	file_to_send.read(&buff[0], 8192);
+	file_to_send.read(&buff[0], BUFF_SIZE);
 	if (file_to_send.rdstate() & std::fstream::badbit)
 	{
 		first = 0;
@@ -107,7 +107,7 @@ int	Get::send_file()
 		return (1);
 	}
 	write(fd, buff, file_to_send.gcount());
-	if (file_to_send.gcount() < 8192)
+	if (file_to_send.gcount() < BUFF_SIZE)
 	{
 		first = 0;
 		file_to_send.close();
@@ -115,8 +115,6 @@ int	Get::send_file()
 	}
 	return (0);
 }
-
-
 
 int	Get::send_header()
 {

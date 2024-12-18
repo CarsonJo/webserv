@@ -1,6 +1,11 @@
 #include "Webserv.hpp"
 
-Webserv::Webserv() : arr(0), virtualserv(), master_socket(0)
+Webserv::Webserv()
+	: arr(0),
+		linkServ(),
+		request(),
+		virtualserv(),
+		master_socket(0)
 {
 
 }
@@ -15,6 +20,9 @@ Webserv::~Webserv()
 		close(arr[i].fd);
 	for (std::map<int, Request*>::iterator it = request.begin(); it != request.end(); it++)
 		delete it->second;
+	for (std::vector<ServerBlock*>::iterator it = virtualserv.begin(); it != virtualserv.end(); it++)
+		delete *it;
+
 }
 
 struct pollfd	*Webserv::c_arr()

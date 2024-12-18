@@ -26,10 +26,8 @@ int main(int argc, char **argv)
 		{
 			if ((err = poll(poll_test.c_arr(), poll_test.get_size(), 0)) > 0)
 			{
-				std::cerr << "enter" << std::endl;
 				poll_test.new_connect(err);
 				poll_test.handle_recv(err);
-				//a++;
 			}
 		}
 	}

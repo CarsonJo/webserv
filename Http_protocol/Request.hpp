@@ -9,11 +9,11 @@
 #include <cstdlib>
 #include "../Webserv/Route.hpp"
 #include "../Webserv/VirtualServ.hpp"
-#include "Date.hpp"
 #include "Error.hpp"
 #include "Http_header.hpp"
 #include "../Webserv/lib_function.hpp"
 # define CLOSE 2
+#define BUFF_SIZE 10000
 # define PROTOCOLE "Http/1.1"
 # define GATEWAY "CGI/1.1"
 
@@ -99,7 +99,7 @@ class Request
 		std::string								cgi_response;
 		std::string								boundary;
 		bool									first;
-		char									buff[10000];
+		char									buff[BUFF_SIZE];
 		Error									err;
 		const VirtualServ						*serv;
 		Route									route;

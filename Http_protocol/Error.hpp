@@ -2,7 +2,6 @@
 #define ERROR_HPP
 #include <string>
 #include <map>
-#include "Date.hpp"
 #include "../Webserv/VirtualServ.hpp"
 #define ROOT "/home/cjozefzo/Documents/cursus42/webserv/root/404.html"
 #define SIZE_404	"63"

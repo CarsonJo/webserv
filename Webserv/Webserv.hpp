@@ -32,7 +32,6 @@ class Webserv
 		void			erase(int fd);
 		void			new_connect(int& event);
 		void			init_all();
-		void			add_master(const VirtualServ& virt_serv);
 
 	private :
 

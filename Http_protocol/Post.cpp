@@ -1,6 +1,6 @@
 #include "Post.hpp"
 
-Post::Post() : Request()
+Post::Post() : Request(), method(0)
 {
 
 }
@@ -112,7 +112,7 @@ std::string Post::handle_multipart(int fd)
     if (content_type.find("multipart/form-data") == std::string::npos)
     {
         std::cout << "[ERROR] Content-Type is not multipart/form-data." << std::endl;
-        Error::handle_error(fd, get_serv(), "400", 400, 0);
+        Error::handle_error(fd, get_serv(), "415", 415, 0);
 		throw(std::exception());
     }
 

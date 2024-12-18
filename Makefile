@@ -12,7 +12,6 @@ SRC =	main.cpp\
 		Http_protocol/Http_header.cpp\
 		Http_protocol/req_function.cpp\
 		Http_protocol/Request.cpp\
-		Http_protocol/Date.cpp\
 		Http_protocol/Error.cpp\
 		parse_config.cpp\
 		Exception.cpp\

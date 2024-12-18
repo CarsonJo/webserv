@@ -102,6 +102,14 @@ std::string e400(const VirtualServ* serv, std::string& header, void *data) {
 	return generateErrorPage("400 Bad Request", "The server could not understand the request due to invalid syntax.");
 }
 
+std::string e415(const VirtualServ* serv, std::string& header, void *data) {
+    (void)serv;
+    (void)header;
+	(void)data;
+	header += "Accept-Post: multipart/form-data;\r\n";
+	return generateErrorPage("415 Unsupported Media Type", "The server does not support the content type.");
+}
+
 std::string e301(const VirtualServ* serv, std::string& header, void *data) {
 	(void)serv;
 	(void)data;
@@ -122,6 +130,7 @@ std::map<int, Error_function> fill_function() {
     ret[500] = e500;
     ret[400] = e400;
 	ret[505] = e505;
+	ret[415] = e415;
     return ret;
 }
 
@@ -142,7 +151,7 @@ void fill_status_messages() {
 
 
 
-Error::Error() : fd(-1), serv(NULL), error(0), str_error("") {}
+Error::Error() : fd(-1), serv(NULL), error(0), str_error(""), data(0) {}
 
 Error::Error(int fd, const VirtualServ* serv, int error, std::string str_error)
     : fd(fd), serv(serv), error(error), str_error(str_error) {}

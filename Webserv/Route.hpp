@@ -46,7 +46,6 @@ public:
         return *this;
     }
 
-
     std::string get_location() const;
     std::string get_root() const;
 	const std::string& get_default() const;

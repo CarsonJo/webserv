@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <sys/stat.h>
-#include "Date.hpp"
 #include "Error.hpp"
 
 Delete::Delete() : Request()
@@ -44,7 +43,7 @@ int Delete::response(int fd)
 
 
     std::string response = "HTTP/1.1 204 No Content\r\n";
-    response.append(Date().get_date()).append("\r\n\r\n");
+    response.append("\r\n\r\n");
 
     write(fd, response.c_str(), response.size());
 

@@ -1,11 +1,21 @@
 #include "ServerBlock.hpp"
 
-ServerBlock::ServerBlock() :port("")
+ServerBlock::ServerBlock()
+	: socket_fd(),
+		port(""),
+		arr(),
+		def(),
+		host("")
 {
 
 }
 
-ServerBlock::ServerBlock(Addrinfo& info) : socket_fd(info)
+ServerBlock::ServerBlock(Addrinfo& info)
+	: socket_fd(info),
+		port(""),
+		arr(),
+		def(),
+		host("")
 {
 
 }

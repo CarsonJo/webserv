@@ -77,12 +77,18 @@ std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-VirtualServ::VirtualServ() : port(""), server_name(""), root(""), host ("0.0.0.0"), accepted_protocol(0)
+VirtualServ::VirtualServ()
+	: port(""),
+		server_name(""),
+		root(""),
+		host ("0.0.0.0"),
+		default_page(""),
+		default_route(),
+		accepted_protocol(0),
+		routes()
 {
 
 }
-
-
 
 VirtualServ::~VirtualServ()
 {
