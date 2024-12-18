@@ -102,6 +102,7 @@ void	Http_header::host(Request *req, std::string& toRead, std::size_t& pos, Serv
 	std::string host = next_word(toRead, pos, " \t\r\n:");
 	std::string port = next_word(toRead, pos, " \t\r\n:");
 	req->set_host(host + ":" + port);
+	std::cout << "THE HOST : " << req->get_host() <<std::endl;
 	req->set_serv(serv->find(host, port ));
 }
 

@@ -216,6 +216,8 @@ void	add_to_body(int fd, Request* req)
 	std::string		to_parsed;
 	int				i = 0;
 
+	if (req->get_int_content_length() == 0)
+		throw (std::exception());
 	if (req->get_int_content_length() < 20000)
 		i = read(fd, &line[0], req->get_int_content_length());
 	else

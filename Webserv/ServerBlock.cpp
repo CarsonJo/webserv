@@ -104,8 +104,13 @@ VirtualServ* ServerBlock::find(const std::string& name, const std::string& t_por
 		else if (t_port == it->second.get_port())
 			return (&it->second);
 	}
-	else if ((name == host || host == DEFAULT_IP) && t_port == port)
+	std::cout << "t_port : " << t_port <<std::endl;
+	std::cout << "port : " << port <<std::endl;
+	std::cout << "host : " << host <<std::endl;
+	std::cout << "name : " << name <<std::endl;
+	if ((name == host || host == DEFAULT_IP) && t_port == port)
 		return (&def);
+	std::cout << "bUGGGGGGGGG" << std::endl;
 	return (0);
 }
 

@@ -70,6 +70,9 @@ void	Webserv::erase(int fd)
 	{
 		if (i->fd == fd)
 		{
+			std::map<int, ServerBlock*>::iterator	it = linkServ.find(i->fd);
+			if (it != linkServ.end())
+				linkServ.erase(it);
 			arr.erase(i);
 			break ;
 		}
@@ -85,6 +88,7 @@ void	Webserv::new_connect(int &event)
 		if (arr[i].revents == POLLIN)
 		{
 			std::cerr << "add" << std::endl;
+			std::cerr << "port virualserv:" << virtualserv[i]->get_port() << std::endl;
 			fd = virtualserv[i]->accept_connect();
 			if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 				throw(std::exception());
