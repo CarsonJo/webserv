@@ -1,7 +1,17 @@
 #include "Route.hpp"
 std::map<std::string, ParseFunction> Route::route_directives = Route::init_route_directives();
 
-Route::Route() : default_page(""), autoindex(false), allowed_methods(0),  cgi_enabled(false) {}
+Route::Route() 
+    : location(""), 
+      root(""), 
+      redirection(""), 
+      default_page(""), 
+      autoindex(false), 
+      allowed_methods(0), 
+      cgi_enabled(false), 
+      upload_path("") 
+{}
+
 Route::~Route() {}
 
 void Route::set_location(const std::string& loc) { location = loc; }
@@ -18,9 +28,8 @@ void Route::set_upload_path(const std::string& path) {
     upload_path = path;
 }
 
-void Route::set_redirection(const std::string& redir)
-{
-	redirection = redir;
+void Route::set_redirection(const std::string& location) {
+    redirection = location;
 }
 
 bool Route::is_cgi_enabled() const {
@@ -33,7 +42,7 @@ const std::string& Route::get_upload_path() const {
 
 std::string Route::get_location() const { return location; }
 std::string Route::get_root() const { return root; }
-std::string Route::get_redirection() const {return redirection;}
+const std::string& Route::get_redirection() const {return redirection;}
 const std::string& Route::get_default() const { return default_page; }
 bool Route::is_autoindex() const { return autoindex; }
 int Route::get_methods() const { return allowed_methods; }
@@ -48,12 +57,18 @@ std::map<std::string, ParseFunction> Route::init_route_directives() {
 	ret["default"] = Route::default_var;
 	ret["cgi"] = Route::cgi_var;
     ret["upload_path"] = Route::upload_path_var;
+    ret["redirection"] = Route::redirection_var;
 
     return ret;
 }
 
 void Route::location_var(const std::string& line, Route& route) {
     route.set_location(get_value(line, alnum_path));
+}
+
+void Route::redirection_var(const std::string& line, Route& route) {
+    std::string temp = get_value(line, alnum_path);
+    route.set_redirection(temp);
 }
 
 void Route::root_var(const std::string& line, Route& route) {

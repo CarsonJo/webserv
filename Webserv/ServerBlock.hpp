@@ -22,11 +22,13 @@ class ServerBlock{
 		void											set_host(const std::string& temp);
 		void											set_default(const VirtualServ& serv);
 		void											set_port(const std::string& port);
+		void 											set_name(const std::string& name);
 		void											set_launched(bool val);
 		int												accept_connect();
 		int												get_fd() const;
 		std::string										get_port() const;
 		std::string										get_host() const;
+		std::string 									get_name() const;
 		void											launch_serv();
 
 	private :
@@ -36,5 +38,6 @@ class ServerBlock{
 		std::map<std::string, VirtualServ>		arr;
 		VirtualServ								def;
 		std::string								host;
+		std::string 							name;
 };
 #endif

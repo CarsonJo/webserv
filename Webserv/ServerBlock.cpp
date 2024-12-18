@@ -25,6 +25,11 @@ void	ServerBlock::set_port(const std::string &port)
 	this->port = port;
 }
 
+void ServerBlock::set_name(const std::string& name) {
+
+    this->name = name; 
+}
+
 int	ServerBlock::accept_connect()
 {
 	return(socket_fd.accept_connect());
@@ -104,4 +109,9 @@ VirtualServ* ServerBlock::unique()
 VirtualServ* ServerBlock::get_default()
 {
 	return (&def);
+}
+
+std::string ServerBlock::get_name() const {
+    
+    return (name);
 }

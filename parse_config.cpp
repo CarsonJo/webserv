@@ -213,6 +213,13 @@ int	parse_config(std::string name, Webserv& server)
 		{
 			if (temp_arr[i]->get_port() == temp_serv.get_port() && temp_arr[i]->get_host() == temp_serv.get_host())
 			{
+				 if (temp_arr[i]->get_name() == temp_serv.get_name())
+                {
+                    std::cerr << "Error: Duplicate server name for the same host and port: " 
+                              << temp_serv.get_name() << " on " << temp_serv.get_host() 
+                              << ":" << temp_serv.get_port() << std::endl;
+                    throw std::exception();  
+                }
 				temp_arr[i]->add(VirtualServ(temp_serv));
 				stop = 1;
 				break;
@@ -225,7 +232,7 @@ int	parse_config(std::string name, Webserv& server)
 		}
 		temp_block.set_port(temp_serv.get_port());
 		temp_block.set_host(temp_serv.get_host());
-		// check si meme server name a faire
+		temp_block.set_name(temp_serv.get_name());
 		temp_block.set_default(VirtualServ(temp_serv));
 		temp_block.launch_serv();
 		temp_arr.push_back(new ServerBlock(temp_block));
