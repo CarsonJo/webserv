@@ -198,8 +198,8 @@ int	parse_config(std::string name, Webserv& server)
 	config.open(name.c_str(), std::ofstream::in);
 	if (config.fail())
 	{
-		std::cerr << std::fstream::failbit << std::endl;
-		return (0);
+		std::cerr << "cannot open onfig file"<< std::endl;
+		return (1);
 	}
 	while (search_block(config, line) != EOF)
 	{

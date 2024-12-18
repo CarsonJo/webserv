@@ -8,4 +8,5 @@ Request*		parsedRequest(int fd, ServerBlock *serv);
 int				parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
 std::string		parse_response(char *buff, Request* req);
 void			parsed_body(std::string& to_parsed, std::size_t& pos, Request* ret, ServerBlock *serv, int fd);
+void			add_to_body(int fd, Request* req);
 #endif

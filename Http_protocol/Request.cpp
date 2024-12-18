@@ -9,7 +9,7 @@ const char *Test::what() const throw()
 }
 //verifier tous les fields
 Request::Request() : protocole_version(""), content_length(""),  content_type(""), target(""), first(0)
-, serv(0)
+, serv(0), loop(1000)
 {
 	for (int i = 0; i < 8192; i++)
 		buff[i] = 0;
@@ -39,6 +39,11 @@ void	Request::set_content_type(const std::string& str)
 void	Request::set_protocole_version(const std::string& str)
 {
 	protocole_version = str;
+}
+
+void	Request::set_host(const std::string& str)
+{
+	host = str;
 }
 
 void	Request::set_status(const std::string& str)
@@ -134,6 +139,11 @@ std::string	Request::get_content_type() const
 std::string	Request::get_protocole_version() const
 {
 	return (protocole_version);
+}
+
+std::string Request::get_host() const
+{
+	return (host);
 }
 
 std::string	Request::get_boundary() const

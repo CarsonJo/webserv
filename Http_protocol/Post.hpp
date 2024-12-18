@@ -19,8 +19,8 @@ class Post : public Request
 		int	response(int fd);
 		std::string	type();
 		int	type_code();
-		int handle_multipart(int fd);
-		
+		std::string handle_multipart(int fd);
+		int handle_upload(int fd);
 	private :
 
 		int method;

@@ -18,6 +18,11 @@ void Route::set_upload_path(const std::string& path) {
     upload_path = path;
 }
 
+void Route::set_redirection(const std::string& redir)
+{
+	redirection = redir;
+}
+
 bool Route::is_cgi_enabled() const {
     return cgi_enabled;
 }
@@ -28,6 +33,7 @@ const std::string& Route::get_upload_path() const {
 
 std::string Route::get_location() const { return location; }
 std::string Route::get_root() const { return root; }
+std::string Route::get_redirection() const {return redirection;}
 const std::string& Route::get_default() const { return default_page; }
 bool Route::is_autoindex() const { return autoindex; }
 int Route::get_methods() const { return allowed_methods; }

@@ -102,7 +102,11 @@ void	Webserv::handle_recv(int &event)
 		{
 			try
 			{
-				request.insert(std::pair<int, Request *>(arr[i].fd, parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
+				std::map<int, Request*>::iterator	it = request.find(arr[i].fd);
+				if (it != request.end())
+					add_to_body(arr[i].fd, it->second);
+				else
+					request.insert(std::pair<int, Request *>(arr[i].fd, parsedRequest(arr[i].fd, linkServ.at(arr[i].fd))));
 				arr[i].events = POLLOUT | POLLIN | POLLHUP | POLLERR | POLLNVAL;
 				event--;
 			}

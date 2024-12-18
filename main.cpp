@@ -1,12 +1,24 @@
 #include "main.hpp"
 
-int main()
+int main(int argc, char **argv)
 {
 	Webserv		poll_test;
 	int			err = 0;
-	//int			a = 0;
 
-	parse_config("config.cf", poll_test);
+	if (argc < 2)
+	{
+		std::cerr << "no config file" << std::endl;
+		return (0);
+	}
+	try
+	{
+		if (parse_config(argv[1], poll_test))
+			return (0);
+	}
+	catch (std::exception& e)
+	{
+		return (0);
+	}
 	signal(SIGPIPE, SIG_IGN);
 	try
 	{

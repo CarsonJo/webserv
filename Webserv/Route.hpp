@@ -19,7 +19,7 @@ public:
     void set_methods(int methods);
 	void set_cgi(bool enabled);
     void set_upload_path(const std::string& path);
-
+	void set_redirection(const std::string& redir);
 	 Route(const Route& other) {
         this->location = other.location;
         this->root = other.root;
@@ -43,7 +43,7 @@ public:
         return *this;
     }
 
-
+	std::string get_redirection() const;
     std::string get_location() const;
     std::string get_root() const;
 	const std::string& get_default() const;
@@ -71,6 +71,6 @@ private:
     int allowed_methods;
 	bool cgi_enabled;
     std::string upload_path;
-
+	std::string redirection;
 };
 #endif

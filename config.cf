@@ -10,6 +10,13 @@ server{
 		methods GET POST;
 		root ./root/server1;
 		autoindex on;
-		upload_path ./root/server1/upload;
+		upload_path  ./root/server1/upload;
+	}
+	{
+		location /cgi/;
+		methods GET POST;
+		root ./root/server1;
+		autoindex on;
+		cgi on;
 	}
 }

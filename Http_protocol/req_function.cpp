@@ -49,12 +49,17 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 			return (1);
 		}
 		//inserer parsing multipart form data
-	
-		
+
+
 	} */
-	else if (ret->get_int_content_length() < 0)
+	else if (ret->get_content_type().size() && ret->get_int_content_length() <= 0)
 	{
-		ret->set_error(fd, ret->get_serv(), "400", 400);//mettre l'erreur specifique content length
+		ret->set_error(fd, ret->get_serv(), "411", 411);//mettre l'erreur specifique content length
+		return (1);
+	}
+	else if (ret->get_int_content_length() > 20000000)
+	{
+		ret->set_error(fd, ret->get_serv(), "413", 413);//mettre l'erreur specifique content length
 		return (1);
 	}
 	else if (to_parsed.size() < ret->get_int_content_length() + pos)
@@ -97,7 +102,6 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 	}
 }
 
-
 //a refaire
 static void	resolve_path(Request *req, std::string path, const VirtualServ *serv,
 							const std::map<std::string, Route>& arr)
@@ -126,20 +130,19 @@ static void	resolve_path(Request *req, std::string path, const VirtualServ *serv
 		else
 			resolve_path(req, path.substr(0, i + 1), serv, arr);
 	}
-
 }
 
 Request* parsedRequest(int fd, ServerBlock *serv)
 {
 	Request*		ret;
-	char			line[8096] = {0};
+	char			line[20000] = {0};
 	std::string		to_parsed;
 	std::size_t		pos = 0;
 	std::size_t		end = 0;
 	ret = 0;
 	try
 	{
-		int i = read(fd, &line[0], 8096);
+		int i = read(fd, &line[0], 20000);
 		std::cout << "READ size:" << i << std::endl;
 		if (i == -1)
 			throw(std::exception());
@@ -188,4 +191,26 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		throw(e);
 	}
 	return (ret);
+}
+
+void	add_to_body(int fd, Request* req)
+{
+	char			line[20000] = {0};
+	std::string		to_parsed;
+	int				i = 0;
+
+	if (req->get_int_content_length() < 20000)
+		i = read(fd, &line[0], req->get_int_content_length());
+	else
+		i = read(fd, &line[0], 20000);
+	if (i == -1)
+			throw(std::exception());
+	to_parsed = std::string(line);
+	std::cerr << "body : " << to_parsed << std::endl;
+	req->set_body(req->get_body() + to_parsed);
+	if (req->get_body().size() > 20000000)
+	{
+		Error::handle_error(fd, req->get_serv(), "413", 413);
+		throw(std::exception());
+	}
 }

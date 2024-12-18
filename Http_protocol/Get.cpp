@@ -145,8 +145,10 @@ int	Get::response(int fd)
 			return (err.trap_card_activate());
 		if (!(route.get_methods() & GET))
 			return (Error::handle_error(fd, serv, "405", 405));//a changer en method not allowed
-		if (target.find(".cgi") != std::string::npos && route.is_cgi_enabled())
+		if (target.find(".cgi") != std::string::npos)
 		{
+			if (!route.is_cgi_enabled())
+				return (Error::handle_error(fd, serv, "403", 403));
 			method = CGI;
 			return (set_up_cgi(fd));
 		}

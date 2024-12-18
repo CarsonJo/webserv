@@ -51,6 +51,7 @@ class Request
 		std::string							get_auth() const;
 		std::string							get_url() const;
 		std::string							get_boundary() const;
+		std::string							get_host() const;
 		const std::string&					get_body() const;
 		const Route&						get_route() const;
 		int									get_fd() const;
@@ -72,6 +73,7 @@ class Request
 		void								set_auth(const std::string& str);
 		void								set_upload(const std::string& str);
 		void								set_serv(const VirtualServ* to_set);
+		void								set_host(const std::string& str);
 		void								set_error(int fd, const VirtualServ *s, const std::string& str, int code);
 		void								add_env(const std::string& str, const std::string& value);
 		void								add_body(std::string body);
@@ -91,14 +93,16 @@ class Request
 		std::string								url;
 		std::string								auth;
 		std::string								upload;
+		std::string								host;
 		std::string								body;
 		std::string								cgi_response;
 		std::string								boundary;
 		bool									first;
-		char									buff[8192];
+		char									buff[10000];
 		Error									err;
 		const VirtualServ						*serv;
 		Route									route;
+		int										loop;
 
 		//CGI
 		void	cgi_header();
