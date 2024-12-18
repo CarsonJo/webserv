@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 				return (0);
 		}
 	}
-	catch(std::exception())
+	catch(std::exception& e)
 	{
 		return (0);
 	}

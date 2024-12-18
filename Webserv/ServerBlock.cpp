@@ -64,8 +64,8 @@ void ServerBlock::add(const VirtualServ& serv)
 		throw (std::exception());
 	}
 	arr[serv.get_name()] = serv; // const assign to non const problem ?
-
 }
+
 // copie partout pas opti
 void	ServerBlock::set_default(const VirtualServ& serv)
 {

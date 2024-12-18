@@ -58,7 +58,6 @@ std::map<std::string, ParseFunction> Route::init_route_directives() {
 	ret["cgi"] = Route::cgi_var;
     ret["upload_path"] = Route::upload_path_var;
     ret["redirection"] = Route::redirection_var;
-
     return ret;
 }
 

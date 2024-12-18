@@ -86,7 +86,6 @@ std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()
 	ret["host"] = VirtualServ::host_var;
 	ret["error_page"] = VirtualServ::error_var;
 	ret["body_size"] = VirtualServ::size_var;
-
 	return (ret);
 }
 
