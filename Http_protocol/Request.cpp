@@ -86,6 +86,11 @@ void	Request::set_upload(const std::string& str)
 	upload = str;
 }
 
+void	Request::set_redirect(const std::string& str)
+{
+	redirect = str;
+}
+
 void	Request::set_error(int fd, const VirtualServ *s, const std::string& str, int code, void *data)
 {
 	err.set_error(fd, s, str, code, data);
@@ -131,6 +136,11 @@ std::string	Request::get_url() const
 	return (url);
 }
 
+std::string& Request::get_redirec()
+{
+	return (redirect);
+}
+
 std::string	Request::get_content_type() const
 {
 	return (content_type);
@@ -166,7 +176,7 @@ std::string	Request::get_auth() const
 	return (auth);
 }
 
-const Route&	Request::get_route() const
+Route&	Request::get_route()
 {
 	return (route);
 }

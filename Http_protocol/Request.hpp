@@ -52,13 +52,14 @@ class Request
 		std::string							get_url() const;
 		std::string							get_boundary() const;
 		std::string							get_host() const;
+		std::string&						get_redirec();
 		const std::string&					get_body() const;
-		const Route&						get_route() const;
+		Route&								get_route();
 		int									get_fd() const;
 		std::size_t							get_int_content_length() const;
 		const VirtualServ*					get_serv() const;
 
-
+		void								set_redirect(const std::string& str);
 		void								set_url(const std::string& str);
 		void								set_route(const Route& route);
 		void								set_fd(int val);
@@ -103,6 +104,8 @@ class Request
 		const VirtualServ						*serv;
 		Route									route;
 		int										loop;
+		std::string								redirect;
+
 
 		//CGI
 		void	cgi_header();

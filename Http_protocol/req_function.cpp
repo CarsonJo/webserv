@@ -85,14 +85,14 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 		while (1)
 		{
 			if (end <= pos + 1)
-				return (1);
+				return (0);
 			test = next_word(to_parsed, pos);
 			it = Http_header::header_func.find(test);
 			if (it == Http_header::header_func.end())
 			{
 				temp = to_parsed.substr(pos).find_first_of("\n");
 				if (temp == std::string::npos)
-					return (0);
+					return (1);
 				pos += temp;
 				continue;
 			}
@@ -101,7 +101,7 @@ int	parsed_header(std::string& to_parsed, std::size_t& pos, Request* ret, Server
 	}
 	catch(const std::exception& e)
 	{
-		return (0);
+		return (1);
 	}
 }
 
@@ -178,7 +178,8 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 			return (ret);
 		}
 		std::cerr << "protocole:" << ret->get_protocole_version() << std::endl;
-		parsed_header(to_parsed, pos, ret, serv, fd);
+		if (parsed_header(to_parsed, pos, ret, serv, fd))
+			return (ret);
 		if (ret->get_serv() == 0)
 		{
 			ret->set_error(fd, 0, "400", 400, 0);
@@ -186,11 +187,16 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		}
 		if (parsed_body(fd, to_parsed, pos, ret))
 			return (ret);
-		std::cerr << "PITIE :" << serv->unique()->get_routes().size() << serv->get_default()->get_routes().size() << std::endl;
 		if (ret->get_serv()->get_routes().size() == 0)
 			ret->set_route(ret->get_serv()->get_default_route());
 		else
 			resolve_path(ret, ret->get_target(), ret->get_serv(), ret->get_serv()->get_routes());
+		if (ret->get_route().get_redirection().size())
+		{
+
+			ret->set_error(fd, 0, "301", 301, &(ret->get_route().get_redirection()));
+			return (ret);
+		}
 		ret->set_target(ret->get_target()
 			.replace(0, ret->get_route().get_location().size(), ret->get_route().get_root().append("/")));
 		std::cerr << "TARGERTTTTTT" << ret->get_target() << std::endl;

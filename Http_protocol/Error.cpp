@@ -105,7 +105,9 @@ std::string e400(const VirtualServ* serv, std::string& header, void *data) {
 std::string e301(const VirtualServ* serv, std::string& header, void *data) {
 	(void)serv;
 	(void)data;
-	header = *(std::string*)data;
+	header += "location: ";
+	header += *(std::string*)data;
+	header += "\r\n";
 	return generateErrorPage("301 Moved Permanently", "The ressources have been moved.");
 }
 

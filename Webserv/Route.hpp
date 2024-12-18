@@ -50,7 +50,7 @@ public:
     std::string get_location() const;
     std::string get_root() const;
 	const std::string& get_default() const;
-    const std::string& get_redirection() const; 
+    std::string& get_redirection();
     bool is_autoindex() const;
     int get_methods() const;
 	bool is_cgi_enabled() const;
