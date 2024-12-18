@@ -79,7 +79,7 @@ int Post::handle_upload(int fd)
 
 			response += "HTTP/1.1 201 Created\r\n";
 			response += "Location:";
-			response += std::string("host") + "/upload" + "/" + filename;
+			response += std::string("host") + route.get_upload_path() + "/" + filename;
 			response.append("\r\n\r\n");
 			write(fd, response.c_str(), response.size());
 			std::cout << response << "RESPONSE_END" << std::endl;
@@ -222,7 +222,7 @@ if (disposition.empty() || disposition.find("form-data") == std::string::npos)
 				throw(std::exception());
             }
 			ret = filename;
-            std::ofstream outfile((upload_path + "/" + filename).c_str(), std::ios::binary);
+            std::ofstream outfile((route.get_root() + upload_path + "/" + filename).c_str(), std::ios::binary);
             if (!outfile)
             {
                 std::cout << "[ERROR] Failed to open file for writing: " << upload_path + "/" + filename << std::endl;

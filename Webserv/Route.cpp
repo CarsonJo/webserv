@@ -108,6 +108,5 @@ void Route::cgi_var(const std::string& line, Route& route) {
 
 void Route::upload_path_var(const std::string& line, Route& route) {
     std::string temp = get_value(line, alnum_path);
-    check_directory_path(temp);
     route.set_upload_path(temp);
 }

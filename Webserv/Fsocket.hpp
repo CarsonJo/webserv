@@ -6,7 +6,6 @@
 # include <string>
 # include <fcntl.h>
 # include <string.h>
-# include <errno.h>
 # include <iostream>
 # include "Addrinfo.hpp"
 # define LISTEN 100
@@ -34,15 +33,9 @@ class Fsocket
 				throw(std::exception());
 
 			if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(A)) < 0)
-			{
-				std::cerr << strerror(errno) << std::endl;
 				throw(std::exception());
-			}
 			if (bind(fd, my_info.get_addr(), my_info.get_addrlen()) < 0)
-			{
-				std::cerr << strerror(errno) << std::endl;
 				throw(std::exception());
-			}
 			if (listen(fd, LISTEN))
 				throw(std::exception());
 			launched = 1;

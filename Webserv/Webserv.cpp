@@ -87,8 +87,8 @@ void	Webserv::new_connect(int &event)
 	{
 		if (arr[i].revents == POLLIN)
 		{
-			std::cerr << "add" << std::endl;
-			std::cerr << "port virualserv:" << virtualserv[i]->get_port() << std::endl;
+			// std::cerr << "add" << std::endl;
+			// std::cerr << "port virualserv:" << virtualserv[i]->get_port() << std::endl;
 			fd = virtualserv[i]->accept_connect();
 			if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 				throw(std::exception());
@@ -124,7 +124,7 @@ void	Webserv::handle_recv(int &event)
 			}
 			catch(std::exception &a)
 			{
-				std::cerr<<"removed" << std::endl;
+				// std::cerr<<"removed" << std::endl;
 				std::map<int, Request*>::iterator	it = request.find(arr[i].fd); //ne devrait jamais trouver
 				if (it != request.end())
 					request.erase(request.find(arr[i].fd));//ne devrait jamais s'executer
@@ -139,7 +139,7 @@ void	Webserv::handle_recv(int &event)
 			if (it == request.end())
 				throw(std::exception());//exception qui ne devrais jamais se declencher;
 			int error = it->second->response(arr[i].fd);
-			std::cerr << "Error: " << error <<std::endl;
+			// std::cerr << "Error: " << error <<std::endl;
 			if (error)
 			{
 				arr[i].events = POLLIN | POLLHUP | POLLERR | POLLNVAL;
@@ -147,7 +147,7 @@ void	Webserv::handle_recv(int &event)
 				request.erase(it);
 				if (error == CLOSE)
 				{
-					std::cerr << "removed2" <<std::endl;
+					// std::cerr << "removed2" <<std::endl;
 					this->erase(arr[i].fd);
 				}
 			}
