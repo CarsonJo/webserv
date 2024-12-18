@@ -32,12 +32,16 @@ public:
     void set_default(const std::string& page);
     void set_port(const std::string& port);
 	void set_host(const std::string& host);
+	void set_error(const std::string& port);
+	void set_size(const std::string& host);
 
 	const Route& get_default_route() const;
     std::string get_name() const;
     std::string get_port() const;
 	std::string get_host() const;
     std::string get_root() const;
+	std::string get_error() const;
+    std::string get_size() const;
     int get_protocol() const;
 
 
@@ -45,6 +49,8 @@ public:
     static void server_var(const std::string& line, VirtualServ& serv);
     static void listen_var(const std::string& line, VirtualServ& serv);
     static void root_var(const std::string& line, VirtualServ& serv);
+ 	static void error_var(const std::string& line, VirtualServ& serv);
+    static void size_var(const std::string& line, VirtualServ& serv);
     static void default_var(const std::string& line, VirtualServ& serv);
 	static void host_var(const std::string& line, VirtualServ& serv);
     static void protocol_var(const std::string& line, VirtualServ& serv);
@@ -60,6 +66,8 @@ private:
     std::string server_name;
     std::string root;
 	std::string host;
+	std::string error_page;
+	std::string body_size;
     std::string default_page;
 	Route		default_route;
     int accepted_protocol;

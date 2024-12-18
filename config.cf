@@ -1,0 +1,22 @@
+server{
+	server_name 	 	nom;
+	listen 				8080;
+	root ./root/server1;
+	default	index.html;
+	protocol	GET POST;
+	host	0.0.0.0;
+	error_page ./root/404.html;
+	{
+		location /;
+		methods GET POST;
+		root ./root/server1;
+		autoindex on;
+		default	index.html;
+	}
+	{
+		location /cgi/;
+		methods GET POST;
+		root ./root/server1;
+		autoindex on;
+	}
+}

@@ -164,9 +164,43 @@ void Error::set_error(int fd, const VirtualServ* serv, std::string str_error, in
 	this->data = data;
 }
 
-std::string Error::get_error(int code, const VirtualServ* serv, std::string& header, void *data) {
-    return function_arr.at(code)(serv, header, data);
+std::string load_error_page(const std::string& page_path) {
+    std::ifstream file(page_path.c_str());
+    std::string content;
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            content += line + "\n";
+        }
+        file.close();
+    } else {
+        content = generateErrorPage("404 Not Found", "The requested resource was not found on this server.");
+    }
+    return content;
 }
+
+std::string Error::get_error(int code, const VirtualServ* serv, std::string& header, void* data) {
+    std::string body;
+
+    if (code == 404) {
+      
+        std::string custom_page = serv->get_error();
+		std::cout << custom_page << "it is the error" << std::endl;
+        if (custom_page != "") {
+        
+            body = load_error_page(custom_page);
+        } else {
+            
+            body = generateErrorPage("404 Not Found", "The requested resource was not found on this server.");
+        }
+    } else {
+        
+        body = function_arr.at(code)(serv, header, data);
+    }
+
+    return body;
+}
+
 
 int Error::trap_card_activate() {
     if (!*this)
