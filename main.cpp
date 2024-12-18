@@ -5,17 +5,20 @@ int main(int argc, char **argv)
 	Webserv		poll_test;
 	int			err = 0;
 
-	if (argc < 2)
-	{
-		std::cerr << "no config file" << std::endl;
-		return (0);
-	}
 	try
 	{
-		if (parse_config(argv[1], poll_test))
-			return (0);
+		if (argc < 2)
+		{
+			if (parse_config("config.cf", poll_test))
+				return (0);
+		}
+		else
+		{
+			if (parse_config(argv[1], poll_test))
+				return (0);
+		}
 	}
-	catch (std::exception& e)
+	catch(std::exception())
 	{
 		return (0);
 	}
