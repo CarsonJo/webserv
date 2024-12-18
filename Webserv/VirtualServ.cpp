@@ -48,6 +48,18 @@ void	VirtualServ::default_var(const std::string& line, VirtualServ& serv)
 
 }
 
+void	VirtualServ:: error_var(const std::string &line, VirtualServ &serv)
+{
+	std::string	temp = get_value(line, myascci);
+	serv.set_error(temp);
+}
+
+void	VirtualServ::size_var(const std::string &line, VirtualServ &serv)
+{
+	std::string	temp = get_value(line, myascci);
+	serv.set_size(temp);
+}
+
 void VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
 {
     std::string temp = get_value(line, myascci);
@@ -72,6 +84,9 @@ std::map<std::string, ServerParseFunction> VirtualServ::init_static_elem()
 	ret["default"] = VirtualServ::default_var;
 	ret["protocol"] = VirtualServ::protocol_var;
 	ret["host"] = VirtualServ::host_var;
+	ret["error_page"] = VirtualServ::error_var;
+	ret["body_size"] = VirtualServ::size_var;
+
 	return (ret);
 }
 
@@ -82,6 +97,8 @@ VirtualServ::VirtualServ()
 		server_name(""),
 		root(""),
 		host ("0.0.0.0"),
+		error_page (""),
+		body_size (""),
 		default_page(""),
 		default_route(),
 		accepted_protocol(0),
@@ -121,6 +138,16 @@ void	VirtualServ::set_host(const std::string &host)
 	this->host = host;
 }
 
+void	VirtualServ::set_error(const std::string &error)
+{
+	this->error_page = error;
+}
+
+void	VirtualServ::set_size(const std::string &size)
+{
+	this->body_size = size;
+}
+
 void	VirtualServ::set_port(const std::string &name)
 {
 	this->port = name;
@@ -150,6 +177,16 @@ std::string	VirtualServ::get_name() const
 std::string	VirtualServ::get_port() const
 {
 	return (port);
+}
+
+std::string	VirtualServ::get_error() const
+{
+	return (error_page);
+}
+
+std::string	VirtualServ::get_size() const
+{
+	return (body_size);
 }
 
 std::string	VirtualServ::get_host() const

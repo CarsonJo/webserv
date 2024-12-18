@@ -5,18 +5,18 @@ server{
 	default	index.html;
 	protocol	GET POST;
 	host	0.0.0.0;
+	error_page ./root/404.html;
 	{
 		location /;
 		methods GET POST;
 		root ./root/server1;
 		autoindex on;
-		upload_path  ./root/server1/upload;
+		default	index.html;
 	}
 	{
 		location /cgi/;
 		methods GET POST;
 		root ./root/server1;
 		autoindex on;
-		cgi on;
 	}
 }
