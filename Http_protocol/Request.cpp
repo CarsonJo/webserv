@@ -356,6 +356,7 @@ int	Request::cgi_header()
 		if (i == 0 || i == -1)
 			return (CLOSE);
 	}
+	return (0);
 }
 
 int	Request::cgi_handler(int fd)
@@ -375,7 +376,7 @@ int	Request::cgi_handler(int fd)
 		return (1);
 	}
 	if (cgi_response.size() == 0)
-		cgi_header();
+		return (cgi_header());
 	else
 	{
 		int i = write(fd, buff, size);

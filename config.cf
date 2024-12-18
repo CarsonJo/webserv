@@ -3,27 +3,39 @@ server{
 	listen 				8080;
 	root ./root/server1;
 	default	index.html;
-	protocol	GET POST;
+	protocol	GET;
 	host	0.0.0.0;
 	{
 		location /;
 		methods GET POST;
 		root ./root/server1;
-		autoindex on;
-		upload_path /upload;
+		default index.html;
+		cgi on;
 	}
 	{
-		location /cgi/;
+		location /2/;
 		methods GET POST;
-		root ./root/server1;
-		autoindex on;
+		root ./root/server2;
+		default index.html;
+		cgi on;
+	}
+	{
+		location /3/;
+		methods GET POST;
+		root ./root/server3;
+		cgi on;
+	}
+	{
+		location /4/;
+		methods GET POST;
+		root ./root/server4;
 		cgi on;
 	}
 }
 
 server{
-	server_name 	 	nom;
-	listen 				8082;
+	server_name 	 	deuxieme;
+	listen 				8080;
 	root ./root/server2;
 	default	index.html;
 	protocol	GET POST;

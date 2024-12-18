@@ -123,15 +123,18 @@ int	Get::send_header()
 	std::string	header;
 	std::string path = target;
 
-	if (access(path.c_str(), F_OK | R_OK))
-		return (Error::handle_error(fd, serv, "403", 403, 0));//a check
+	if (access(path.c_str(), F_OK ))
+		return (Error::handle_error(fd, serv, "404", 404, 0));//a check
+	if (access(path.c_str(), R_OK))
+		return (Error::handle_error(fd, serv, "403", 403, 0));
 	file_to_send.open(path.c_str(), std::fstream::in | std::ios::binary);
 	if (!file_to_send.is_open())
 		return (Error::handle_error(fd, serv, "403", 403, 0));//a check
 	content_length = find_file_size(file_to_send).append("\r\n");
 	content_type = find_content_type(target);
 	make_header(header, content_length, content_type);
-	if (write(fd, header.c_str(), header.size()))
+	int i = write(fd, header.c_str(), header.size());
+	if (i == 0 || i == -1)
 		return (CLOSE);
 	return (0);
 }
