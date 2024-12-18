@@ -330,7 +330,7 @@ static std::string	next_word(std::string& sub, std::size_t& i) // le mettre dans
 	return (ret);
 }
 
-void	Request::cgi_header()
+int	Request::cgi_header()
 {
 	std::string	header = buff;
 	std::size_t	pos = header.find("Status:");
@@ -343,14 +343,18 @@ void	Request::cgi_header()
 		cgi_response.append("HTTP/1.1 ").append(code).append("\n");
 		cgi_response.append(header.substr(0, temp)).append(header.substr(pos));
 		std::cout << "Size1 : " << cgi_response.size() << std::endl;
-		write(fd, cgi_response.c_str(), cgi_response.size());
+		int i = write(fd, cgi_response.c_str(), cgi_response.size());
+		if (i == 0 || i == -1)
+			return (CLOSE);
 	}
 	else
 	{
 		cgi_response.append("HTTP/1.1 200 OK\n");
 		cgi_response.append(header);
 		std::cout << "Size2 : " << cgi_response.size() << std::endl;
-		write(fd, cgi_response.c_str(), cgi_response.size());
+		int i = write(fd, cgi_response.c_str(), cgi_response.size());
+		if (i == 0 || i == -1)
+			return (CLOSE);
 	}
 }
 
@@ -373,6 +377,11 @@ int	Request::cgi_handler(int fd)
 	if (cgi_response.size() == 0)
 		cgi_header();
 	else
-		write(fd, buff, size);
+	{
+		int i = write(fd, buff, size);
+		if ( i == -1 || i == 0)
+			return (CLOSE);
+	}
+		
 	return (0);
 }

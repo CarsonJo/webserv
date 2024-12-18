@@ -81,7 +81,9 @@ int Post::handle_upload(int fd)
 			response += "Location:";
 			response += std::string("host") + route.get_upload_path() + "/" + filename;
 			response.append("\r\n\r\n");
-			write(fd, response.c_str(), response.size());
+			int i = write(fd, response.c_str(), response.size());
+			if ( i == -1 || i == 0)
+				return (CLOSE);
 			std::cout << response << "RESPONSE_END" << std::endl;
 			return (1);
 		}

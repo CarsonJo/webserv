@@ -45,7 +45,9 @@ int Delete::response(int fd)
     std::string response = "HTTP/1.1 204 No Content\r\n";
     response.append("\r\n\r\n");
 
-    write(fd, response.c_str(), response.size());
+	int i = write(fd, response.c_str(), response.size());
+    if (i == -1 || i == 0)
+		return (CLOSE);
 
     return 1;
 }

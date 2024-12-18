@@ -106,7 +106,9 @@ int	Get::send_file()
 		file_to_send.close();
 		return (1);
 	}
-	write(fd, buff, file_to_send.gcount());
+	int i = write(fd, buff, file_to_send.gcount());
+	if ( i == -1 || i == 0)
+		return (CLOSE);
 	if (file_to_send.gcount() < BUFF_SIZE)
 	{
 		first = 0;
@@ -129,7 +131,8 @@ int	Get::send_header()
 	content_length = find_file_size(file_to_send).append("\r\n");
 	content_type = find_content_type(target);
 	make_header(header, content_length, content_type);
-	write(fd, header.c_str(), header.size());
+	if (write(fd, header.c_str(), header.size()))
+		return (CLOSE);
 	return (0);
 }
 
@@ -194,15 +197,11 @@ int	Get::response(int fd)
                     header.append("Content-Type: text/html\r\n\r\n");
 
 
-                    if (write(fd, header.c_str(), header.size()) == -1) {
-                        return 1;
+					header += html;
+					int i = write(fd, header.c_str(), header.size());
+                    if (i == -1 || i == 0) {
+                        return CLOSE;
                     }
-
-
-                    if (write(fd, html.c_str(), html.size()) == -1) {
-                        return 1;
-                    }
-
                     first = 0;
                 } catch (const std::exception& e) {
                     return Error::handle_error(fd, serv, "500", 500, 0);

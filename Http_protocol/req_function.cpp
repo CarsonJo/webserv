@@ -147,7 +147,7 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 	{
 		int i = read(fd, &line[0], 20000);
 		std::cout << "READ size:" << i << std::endl;
-		if (i == -1)
+		if (i == -1 || i == 0)
 			throw(std::exception());
 		to_parsed = std::string(line);
 		end = to_parsed.find("\n");
@@ -222,7 +222,7 @@ void	add_to_body(int fd, Request* req)
 		i = read(fd, &line[0], req->get_int_content_length());
 	else
 		i = read(fd, &line[0], 20000);
-	if (i == -1)
+	if (i == -1 || i == 0)
 			throw(std::exception());
 	to_parsed = std::string(line);
 	std::cerr << "body : " << to_parsed << std::endl;

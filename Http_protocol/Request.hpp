@@ -108,7 +108,7 @@ class Request
 
 
 		//CGI
-		void	cgi_header();
+		int	cgi_header();
 		void	set_var_env();
 		int 	set_up_cgi(int fd);
 		int		cgi_handler(int fd);
