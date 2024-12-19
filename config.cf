@@ -5,12 +5,13 @@ server{
 	default	index.html;
 	protocol	GET;
 	host	0.0.0.0;
+	body_size 1000000;
 	{
 		location /;
 		methods GET POST;
 		root ./root/server1;
+		upload_path /upload;
 		default index.html;
-		cgi on;
 	}
 	{
 		location /2/;

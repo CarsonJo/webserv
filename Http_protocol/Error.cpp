@@ -75,6 +75,13 @@ std::string e500(const VirtualServ* serv, std::string& header, void *data) {
 	return generateErrorPage("500 Internal Server Error", "The server encountered an internal error and could not complete your request.");
 }
 
+std::string e501(const VirtualServ* serv, std::string& header, void *data) {
+    (void)serv;
+    (void)header;
+	(void)data;
+	return generateErrorPage("501 not Implemented", "The server only support GET POST DELETE.");
+}
+
 std::string e505(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
@@ -129,6 +136,7 @@ std::map<int, Error_function> fill_function() {
     ret[413] = e413;
     ret[500] = e500;
     ret[400] = e400;
+	ret[501] = e501;
 	ret[505] = e505;
 	ret[415] = e415;
     return ret;

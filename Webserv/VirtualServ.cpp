@@ -57,7 +57,23 @@ void	VirtualServ:: error_var(const std::string &line, VirtualServ &serv)
 void	VirtualServ::size_var(const std::string &line, VirtualServ &serv)
 {
 	std::string	temp = get_value(line, myascci);
-	serv.set_size(temp);
+	if (temp.size() > 10)
+	{
+		std::cout << "body size can not exceed 20mo" << std::endl;
+		throw(std::exception());
+	}
+	float f = std::atof(temp.c_str());
+	if (f <= 0)
+	{
+		std::cout << "body size can not be negative" << std::endl;
+		throw(std::exception());
+	}
+	if (f > 1000000)
+	{
+		std::cout << "body size can not exceed 1mo" << std::endl;
+		throw(std::exception());
+	}
+	serv.set_size(static_cast<int>(f));
 }
 
 void VirtualServ::protocol_var(const std::string& line, VirtualServ& serv)
@@ -97,7 +113,7 @@ VirtualServ::VirtualServ()
 		root(""),
 		host ("0.0.0.0"),
 		error_page (""),
-		body_size (""),
+		body_size (0),
 		default_page(""),
 		default_route(),
 		accepted_protocol(0),
@@ -142,7 +158,7 @@ void	VirtualServ::set_error(const std::string &error)
 	this->error_page = error;
 }
 
-void	VirtualServ::set_size(const std::string &size)
+void	VirtualServ::set_size(int size)
 {
 	this->body_size = size;
 }
@@ -183,7 +199,7 @@ std::string	VirtualServ::get_error() const
 	return (error_page);
 }
 
-std::string	VirtualServ::get_size() const
+std::size_t VirtualServ::get_size() const
 {
 	return (body_size);
 }

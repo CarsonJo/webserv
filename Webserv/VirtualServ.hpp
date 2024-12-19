@@ -33,7 +33,7 @@ public:
     void set_port(const std::string& port);
 	void set_host(const std::string& host);
 	void set_error(const std::string& port);
-	void set_size(const std::string& host);
+	void set_size(int host);
 
 	const Route& get_default_route() const;
     std::string get_name() const;
@@ -41,7 +41,7 @@ public:
 	std::string get_host() const;
     std::string get_root() const;
 	std::string get_error() const;
-    std::string get_size() const;
+    std::size_t	 get_size() const;
     int get_protocol() const;
 
 
@@ -67,7 +67,7 @@ private:
     std::string root;
 	std::string host;
 	std::string error_page;
-	std::string body_size;
+	std::size_t	body_size;
     std::string default_page;
 	Route		default_route;
     int accepted_protocol;

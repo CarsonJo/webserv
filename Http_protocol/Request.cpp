@@ -130,6 +130,11 @@ void	Request::set_route(const Route& str)
 	route =str;
 }
 
+
+Error&	Request::get_error()
+{
+	return (err);
+}
 std::string	Request::get_location() const
 {
 	return (location);

@@ -8,7 +8,7 @@ Request* checkRequest(const std::string& temp)
 		return (new Post());
 	else if (temp == "DELETE")
 		return (new Delete());
-	throw(std::exception());
+	return (0);
 }
 
 static std::string	next_word(std::string& sub, std::size_t& i)
@@ -58,7 +58,7 @@ int	parsed_body(int fd, std::string& to_parsed, std::size_t& pos, Request* ret)
 		ret->set_error(fd, ret->get_serv(), "411", 411, 0);//mettre l'erreur specifique content length
 		return (1);
 	}
-	else if (ret->get_int_content_length() > 20000000)
+	else if (ret->get_int_content_length() > MAX_BODY || (ret->get_serv()->get_size() && ret->get_int_content_length() > ret->get_serv()->get_size()))
 	{
 		ret->set_error(fd, ret->get_serv(), "413", 413, 0);//mettre l'erreur specifique content length
 		return (1);
@@ -149,10 +149,16 @@ Request* parsedRequest(int fd, ServerBlock *serv)
 		std::cout << "READ size:" << i << std::endl;
 		if (i == -1 || i == 0)
 			throw(std::exception());
-		to_parsed = std::string(line);
+		to_parsed = std::string(line, i);
 		end = to_parsed.find("\n");
 		std::cerr << "request : " << to_parsed << std::endl;
 		ret = checkRequest(next_word(to_parsed, pos));
+		if (ret == 0)
+		{
+			ret = new Get();
+			ret->set_error(fd, 0, "501", 501, 0);
+			return (ret);
+		}
 		if (end == std::string::npos)
 		{
 			ret->set_error(fd, 0, "400", 400, 0);
@@ -216,6 +222,11 @@ void	add_to_body(int fd, Request* req)
 	std::string		to_parsed;
 	int				i = 0;
 
+	if (req->get_error())
+	{
+		req->get_error().trap_card_activate();
+		throw(std::exception());
+	}
 	if (req->get_int_content_length() == 0)
 		throw (std::exception());
 	if (req->get_int_content_length() < 20000)
@@ -224,7 +235,7 @@ void	add_to_body(int fd, Request* req)
 		i = read(fd, &line[0], 20000);
 	if (i == -1 || i == 0)
 			throw(std::exception());
-	to_parsed = std::string(line);
+	to_parsed = std::string(line, i);
 	std::cerr << "body : " << to_parsed << std::endl;
 	req->set_body(req->get_body() + to_parsed);
 	if (req->get_body().size() > 20000000)

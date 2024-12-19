@@ -42,6 +42,7 @@ class Request
 		virtual int								type_code() = 0;
 
 		std::string							get_location() const;
+		Error&								get_error();
 		std::string							get_status() const;
 		std::string							get_content_type() const;
 		std::string							get_protocole_version() const;
