@@ -144,6 +144,7 @@ void fill_status_messages() {
     status_messages[413] = "Payload Too Large";
 	status_messages[411] = "Content Length required";
     status_messages[500] = "Internal Server Error";
+	status_messages[501] = "Method not supported";
 	status_messages[505] = "HTTP Version Not Supported";
 	status_messages[301] = "Moved Permanently";
 }
@@ -183,18 +184,18 @@ std::string Error::get_error(int code, const VirtualServ* serv, std::string& hea
     std::string body;
 
     if (code == 404) {
-      
+
         std::string custom_page = serv->get_error();
 		std::cout << custom_page << "it is the error" << std::endl;
         if (custom_page != "") {
-        
+
             body = load_error_page(custom_page);
         } else {
-            
+
             body = generateErrorPage("404 Not Found", "The requested resource was not found on this server.");
         }
     } else {
-        
+
         body = function_arr.at(code)(serv, header, data);
     }
 

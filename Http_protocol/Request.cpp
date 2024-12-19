@@ -339,6 +339,7 @@ int	Request::cgi_header()
 
 	if (pos != std::string::npos)
 	{
+		pos += 7;
 		code = next_word(header, pos);
 		cgi_response.append("HTTP/1.1 ").append(code).append("\n");
 		cgi_response.append(header.substr(0, temp)).append(header.substr(pos));
@@ -363,17 +364,16 @@ int	Request::cgi_handler(int fd)
 {
 	int	status;
 
-	int size = read(p_read[0], &buff[0], 8196);//mettre le read en non bloquant sinon les problemes;
-
 	if (waitpid(pid, &status, WNOHANG) > 0)
 		children = 0;
-	if (size == -1 || size == 0)
+	int size = read(p_read[0], &buff[0], 8196);//mettre le read en non bloquant sinon les problemes;
+	if (size == 0 || size == -1)
 	{
 		if (children == 1)
 			return (0);
 		close(p_read[0]);
 		close(p_read[1]);
-		return (1);
+		return (CLOSE);
 	}
 	if (cgi_response.size() == 0)
 		return (cgi_header());
@@ -383,6 +383,6 @@ int	Request::cgi_handler(int fd)
 		if ( i == -1 || i == 0)
 			return (CLOSE);
 	}
-		
+
 	return (0);
 }

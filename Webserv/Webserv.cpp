@@ -127,7 +127,10 @@ void	Webserv::handle_recv(int &event)
 				std::cerr<<"removed1" << std::endl;
 				std::map<int, Request*>::iterator	it = request.find(arr[i].fd); //ne devrait jamais trouver
 				if (it != request.end())
-					request.erase(request.find(arr[i].fd));//ne devrait jamais s'executer
+				{
+					delete it->second;
+					request.erase(it);
+				}//ne devrait jamais s'executer
 				std::map<int, ServerBlock*>::iterator	itt = linkServ.find(arr[i].fd);
 				if (itt != linkServ.end())
 					linkServ.erase(itt);
