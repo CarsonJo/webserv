@@ -41,7 +41,7 @@ class Webserv
 		std::vector<ServerBlock*>	virtualserv;
 		int							master_socket;
 		Webserv(const Webserv &to_copy);
-		void	add_connect(int fd, int flag, ServerBlock *link);
+		void	add_connect(int fd, short int flag, ServerBlock *link);
 		void	operator=(const Webserv &to_copy);
 };
 #endif

@@ -47,7 +47,7 @@ int	Webserv::get_connect_size() const
 	return (arr.size() - master_socket);
 }
 
-void	Webserv::add_connect(int fd, int flag, ServerBlock *link)
+void	Webserv::add_connect(int fd, short int flag, ServerBlock *link)
 {
 	arr.push_back((struct pollfd){.fd = fd, .events = flag, .revents = 0});
 	linkServ.insert(std::pair<int, ServerBlock*>(fd, link));
