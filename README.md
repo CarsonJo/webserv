@@ -38,7 +38,6 @@ The server handles multiple clients simultaneously using non-blocking I/O, and i
 ├── root/               # Default web root (HTML, CSS, SCSS, JS assets)
 ├── config.cf           # Default server configuration file
 ├── parse_config.cpp    # Configuration file parser
-├── get_value.cpp       # Config value extraction helpers
 ├── Exception.cpp/.hpp  # Custom exception handling
 ├── main.cpp / main.hpp # Entry point
 └── Makefile
