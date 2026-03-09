@@ -27,7 +27,7 @@ Request::Request()
 	err(),
 	serv(0),
 	route(),
-	loop(1000),
+	loop(3000),
 	redirect("")
 {
 	for (int i = 0; i < 10000; i++)
@@ -283,6 +283,8 @@ int Request::set_up_cgi(int fd)
 	set_var_env();
 	if (access(target.c_str(), F_OK | X_OK) != 0)
 		return (Error::handle_error(fd, serv, "404", 404, 0));
+	if (fcntl(p_write[1], F_SETFL, O_NONBLOCK) < 0)
+			throw(std::exception());
 	if (int_content_length > body.size())
 		write(p_write[1], body.c_str(), body.size());
 	else
@@ -369,9 +371,18 @@ int	Request::cgi_handler(int fd)
 {
 	int	status;
 
+	loop--;
 	if (waitpid(pid, &status, WNOHANG) > 0)
 		children = 0;
 	int size = read(p_read[0], &buff[0], 8196);//mettre le read en non bloquant sinon les problemes;
+	if (loop == 0)
+	{
+		kill(pid, SIGINT);
+		Error::handle_error(fd, serv, "500", 500, 0);
+		if (waitpid(pid, &status, WNOHANG) > 0)
+			children = 0;
+		return (1);
+	}
 	if (size == 0 || size == -1)
 	{
 		if (children == 1)

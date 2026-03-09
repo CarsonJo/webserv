@@ -10,7 +10,7 @@ server{
 		location /;
 		methods GET POST;
 		root ./root/server1;
-		upload_path /upload;
+		cgi on;
 		default index.html;
 	}
 	{
@@ -36,7 +36,7 @@ server{
 
 server{
 	server_name 	 	deuxieme;
-	listen 				8080;
+	listen 				8081;
 	root ./root/server2;
 	default	index.html;
 	protocol	GET POST;
@@ -59,12 +59,13 @@ server{
 
 server{
 	server_name 	 	nom;
-	listen 				8083;
+	listen 				8082;
 	root ./root/server3;
 	default	index.html;
 	protocol	GET POST;
 	host	0.0.0.0;
 	{
+		redirection https://www.youtube.com/watch?v=dQw4w9WgXcQ;
 		location /;
 		methods GET POST;
 		root ./root/server3;
@@ -82,7 +83,7 @@ server{
 
 server{
 	server_name 	 	nom;
-	listen 				8084;
+	listen 				8083;
 	root ./root/server4;
 	default	index.html;
 	protocol	GET POST;

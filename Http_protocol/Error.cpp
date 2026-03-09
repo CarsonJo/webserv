@@ -113,7 +113,7 @@ std::string e415(const VirtualServ* serv, std::string& header, void *data) {
     (void)serv;
     (void)header;
 	(void)data;
-	header += "Accept-Post: multipart/form-data;\r\n";
+	header += "Accept-Post: multipart/form-data\r\n";
 	return generateErrorPage("415 Unsupported Media Type", "The server does not support the content type.");
 }
 
